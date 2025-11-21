@@ -6,7 +6,7 @@
 
 - [x] Créer le repo Git (backend + frontend)
 - [x] Installer Django + DRF
-- [ ] Configurer PostgreSQL Neon
+- [x] Configurer PostgreSQL Neon
 - [ ] Installer et configurer Clerk (clé publique + JWT)
 - [ ] Créer projet React + Vite
 - [ ] Ajouter Tailwind ou Material UI
@@ -18,16 +18,16 @@
 
 📌 **Référence** : pages 5 à 8 (diagramme et modèles)
 
-- [ ] User (clerk_id, email, role)
-- [ ] PlayerProfile
-- [ ] Tournament
-- [ ] Team
-- [ ] JoinRequest ⚠️ _(cœur du système)_
-- [ ] Match
-
+- [x] User (clerk_id, email, role)          <!-- accounts -->
+- [x] PlayerProfile                         <!-- players -->
+- [x] Tournament                            <!-- tournaments -->
+- [x] Team                                  <!-- tournaments -->
+- [x] JoinRequest ⚠️ _(cœur du système)_    <!-- requestes -->
+- [x] Match                                 <!-- matches -->
+<!-- - [ ] payments -->
 **Faire ensuite :**
-- [ ] `python manage.py makemigrations`
-- [ ] `python manage.py migrate`
+- [x] `python manage.py makemigrations`
+- [x] `python manage.py migrate`
 
 ---
 
