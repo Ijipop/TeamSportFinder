@@ -17,7 +17,7 @@ Add `installation.txt`
 Django==5.0.1
 djangorestframework==3.14.0
 django-cors-headers==4.3.1
-python-dotenv=1.0.0
+python-dotenv==1.0.0
  
 # Database
 psycopg2-binary==2.9.9
@@ -53,6 +53,8 @@ faker==22.0.0
 # Documentation
 drf-spectacular==0.27.0
 ```
+
+`pip install -r installation.txt`
 
 Change `==` tp `>=` if speficic build failed
 
