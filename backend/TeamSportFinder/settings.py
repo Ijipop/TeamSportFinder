@@ -176,7 +176,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # =============================================================================
 # Autoriser le frontend React à faire des requêtes
 CORS_ALLOWED_ORIGINS = [
-    os.getenv('FRONTEND_URL', 'http://localhost:3000'),
+    os.getenv('FRONTEND_URL', 'http://localhost:5173'),
 ]
 
 CORS_ALLOW_CREDENTIALS = True
@@ -238,4 +238,14 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+# Django REST Framework Configuration
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'clerk_auth.authentication.ClerkAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }

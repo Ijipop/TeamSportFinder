@@ -14,9 +14,9 @@ class JoinRequest(models.Model):
 
     id = models.UUIDField(primary_key=True , default=uuid.uuid4)
     player = models.ForeignKey(User , on_delete=models.CASCADE ,
-    related_name='join_requests ')
+    related_name='requestes ')
     team = models.ForeignKey(Team , on_delete=models.CASCADE ,
-    related_name='join_requests ')
+    related_name='requestes ')
     status = models.CharField(max_length =20, choices=STATUS_CHOICES ,
     default='pending ')
     message = models.TextField(blank=True)
@@ -24,5 +24,5 @@ class JoinRequest(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'join_requests '
+        db_table = 'requestes '
         unique_together = ['player ', 'team'] # Une seule demande par joueur/equipe
