@@ -28,6 +28,8 @@
 **Faire ensuite :**
 - [x] `python manage.py makemigrations`
 - [x] `python manage.py migrate`
+- [x] `python manage.py makemigrations`
+- [x] `python manage.py migrate`
 
 ---
 
