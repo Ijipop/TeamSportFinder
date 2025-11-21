@@ -1,2 +1,21 @@
 .vscode/settings.json
+
+# Environment variables
 .env
+.env.*
+*.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+!.env.example
+!.env.template
+!.env.sample
+
+# Python virtual environments
+env/
+venv/
+ENV/
+.venv/
+backend/env
