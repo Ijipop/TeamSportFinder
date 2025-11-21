@@ -1,8 +1,8 @@
 import uuid
 from django.db import models
 
-from backend.accounts.models import User
-from backend.tournaments.models import Team
+from accounts.models import User
+from tournaments.models import Team
 
 class JoinRequest(models.Model):
 # """Demande d'adhesion a une equipe"""
@@ -14,9 +14,9 @@ class JoinRequest(models.Model):
 
     id = models.UUIDField(primary_key=True , default=uuid.uuid4)
     player = models.ForeignKey(User , on_delete=models.CASCADE ,
-    related_name='join_requests ')
+    related_name='join_requests')
     team = models.ForeignKey(Team , on_delete=models.CASCADE ,
-    related_name='join_requests ')
+    related_name='join_requests')
     status = models.CharField(max_length =20, choices=STATUS_CHOICES ,
     default='pending ')
     message = models.TextField(blank=True)
@@ -25,4 +25,4 @@ class JoinRequest(models.Model):
 
     class Meta:
         db_table = 'join_requests '
-        unique_together = ['player ', 'team'] # Une seule demande par joueur/equipe
+        unique_together = ['player', 'team'] # Une seule demande par joueur/equipe

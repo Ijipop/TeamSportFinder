@@ -1,6 +1,6 @@
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
-from .utils import verify_clerk_token
+from .utils import verify_clerk_token, get_or_create_user_from_clerk
 
 
 class ClerkAuthentication(authentication.BaseAuthentication):
@@ -41,13 +41,28 @@ class ClerkAuthentication(authentication.BaseAuthentication):
                 verification_result.get('error', 'Token invalide')
             )
         
-        # Stocker les infos utilisateur dans la requête
-        request.clerk_user_id = verification_result.get('user_id')
-        request.clerk_email = verification_result.get('email')
-        request.clerk_role = verification_result.get('role', 'player')
+        # Récupérer ou créer l'utilisateur Django
+        clerk_user_id = verification_result.get('user_id')
+        clerk_email = verification_result.get('email')
+        clerk_role = verification_result.get('role', 'player')
         
-        # Retourner (user, token) - user sera None car on utilise Clerk
-        # On peut créer un objet user factice ou utiliser le user_id
-        user = None  # On utilisera request.clerk_user_id dans les views
+        # Extraire le nom complet depuis le token décodé si disponible
+        decoded_token = verification_result.get('decoded_token', {})
+        full_name = decoded_token.get('name') or decoded_token.get('full_name') or None
+        
+        # Récupérer ou créer l'utilisateur Django
+        user = get_or_create_user_from_clerk(
+            clerk_user_id=clerk_user_id,
+            email=clerk_email,
+            full_name=full_name,
+            role=clerk_role
+        )
+        
+        # Stocker les infos Clerk dans la requête (pour référence)
+        request.clerk_user_id = clerk_user_id
+        request.clerk_email = clerk_email
+        request.clerk_role = clerk_role
+        
+        # Retourner l'utilisateur Django et le token
         return (user, token)
 
