@@ -22,7 +22,7 @@
 - [x] PlayerProfile                         <!-- players -->
 - [x] Tournament                            <!-- tournaments -->
 - [x] Team                                  <!-- tournaments -->
-- [x] JoinRequest ⚠️ _(cœur du système)_    <!-- requests -->
+- [x] JoinRequest ⚠️ _(cœur du système)_    <!-- requestes -->
 - [x] Match                                 <!-- matches -->
 <!-- - [ ] payments -->
 **Faire ensuite :**
