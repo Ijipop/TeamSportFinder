@@ -45,6 +45,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'accountsConfig.apps.AccountsConfig',
+    'matches.apps.MatchesConfig',
+    'payments.apps.PaymentsConfig',
+    'players.apps.PlayersConfig',
+    'requestes.apps.RequestesConfig',
+    'tournaments.apps.TournamentsConfig',
 ]
 
 MIDDLEWARE = [
