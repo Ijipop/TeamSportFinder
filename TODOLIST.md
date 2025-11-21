@@ -4,8 +4,8 @@
 
 📌 **Référence** : Planning Jour 1, page 16
 
-- [ ] Créer le repo Git (backend + frontend)
-- [ ] Installer Django + DRF
+- [x] Créer le repo Git (backend + frontend)
+- [x] Installer Django + DRF
 - [ ] Configurer PostgreSQL Neon
 - [ ] Installer et configurer Clerk (clé publique + JWT)
 - [ ] Créer projet React + Vite
