@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'corsheaders',      # CORS headers
 
     # Local apps
-    'accountsConfig.apps.AccountsConfig',
+    'accounts.apps.AccountsConfig',
     'matches.apps.MatchesConfig',
     'payments.apps.PaymentsConfig',
     'players.apps.PlayersConfig',
@@ -248,4 +248,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+}
+
+# Cache configuration (pour les JWKS)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
 }

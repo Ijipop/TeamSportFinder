@@ -1,6 +1,6 @@
 from django.db import models
 
-from backend.accounts.models import User
+from accounts.models import User
 
 class PlayerProfile(models.Model):
 # """Profil etendu pour les joueurs"""
