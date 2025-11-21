@@ -139,7 +139,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
-    os.getenv('FRONTEND_URL', 'http://localhost:3000'),
+    os.getenv('FRONTEND_URL', 'http://localhost:5173'),
 ]
 
 CORS_ALLOWED_METHODES = [
@@ -150,3 +150,13 @@ CORS_ALLOWED_METHODES = [
     'POST',
     'PUT',
 ]
+
+# Django REST Framework Configuration
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'clerk_auth.authentication.ClerkAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
