@@ -1,7 +1,6 @@
 import os
 import requests
 import jwt  # type: ignore  # PyJWT package
-from django.conf import settings
 
 
 def verify_clerk_token(token):
