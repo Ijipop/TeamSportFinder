@@ -17,7 +17,7 @@ Add `installation.txt`
 Django==5.0.1
 djangorestframework==3.14.0
 django-cors-headers==4.3.1
-python-dotenv==1.0.0
+python-dotenv=1.0.0
  
 # Database
 psycopg2-binary==2.9.9
