@@ -31,7 +31,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')]
 
 
 # Application definition
@@ -149,7 +149,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # =============================================================================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'courses.authentication.ClerkJWTAuthentication',  # Notre auth custom
+        'clerk_auth.authentication.ClerkAuthentication',  # Auth Clerk JWT
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -173,9 +173,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS CONFIGURATION
 # =============================================================================
 # Autoriser le frontend React à faire des requêtes
-CORS_ALLOWED_ORIGINS = [
-    os.getenv('FRONTEND_URL', 'http://localhost:5173'),
-]
+# Supporte plusieurs origines (développement et production)
+frontend_urls = os.getenv('FRONTEND_URL', 'http://localhost:5173,http://localhost:3000')
+CORS_ALLOWED_ORIGINS = [url.strip() for url in frontend_urls.split(',')]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -238,12 +238,5 @@ LOGGING = {
     },
 }
 
-# Django REST Framework Configuration
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'clerk_auth.authentication.ClerkAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-}
+# Configuration REST_FRAMEWORK déjà définie plus haut (ligne 150)
+# Pas besoin de la redéfinir ici

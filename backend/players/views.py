@@ -23,6 +23,8 @@ class PlayerProfileViewSet(viewsets.ModelViewSet):
     """
     permission_classes = [IsAuthenticated]
     serializer_class = PlayerProfileSerializer
+    # Désactiver les méthodes qui nécessitent un ID dans l'URL
+    http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options']
     
     def get_queryset(self):
         """
@@ -101,6 +103,7 @@ class PlayerProfileViewSet(viewsets.ModelViewSet):
         PUT /api/players/profile/
         Met à jour complètement le profil
         """
+        # Utiliser get_object() au lieu de kwargs.get('pk')
         profile = self.get_object()
         serializer = PlayerProfileCreateSerializer(profile, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -115,6 +118,7 @@ class PlayerProfileViewSet(viewsets.ModelViewSet):
         PATCH /api/players/profile/
         Met à jour partiellement le profil
         """
+        # Utiliser get_object() au lieu de kwargs.get('pk')
         profile = self.get_object()
         serializer = PlayerProfileCreateSerializer(profile, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -129,6 +133,7 @@ class PlayerProfileViewSet(viewsets.ModelViewSet):
         DELETE /api/players/profile/
         Supprime le profil (optionnel, selon vos besoins)
         """
+        # Utiliser get_object() au lieu de kwargs.get('pk')
         profile = self.get_object()
         profile.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

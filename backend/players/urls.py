@@ -1,12 +1,15 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 from players.views import PlayerProfileViewSet
 
-# Créer un router pour les ViewSets
-router = DefaultRouter()
-router.register(r'profile', PlayerProfileViewSet, basename='player-profile')
-
+# Routes personnalisées pour le profil joueur (sans ID dans l'URL)
+# Le router DRF génère des routes avec ID, donc on crée les routes manuellement
 urlpatterns = [
-    path('', include(router.urls)),
+    path('profile/', PlayerProfileViewSet.as_view({
+        'get': 'list',      # GET /api/players/profile/
+        'post': 'create',   # POST /api/players/profile/
+        'put': 'update',    # PUT /api/players/profile/
+        'patch': 'partial_update',  # PATCH /api/players/profile/
+        'delete': 'destroy',  # DELETE /api/players/profile/
+    }), name='player-profile'),
 ]
 
