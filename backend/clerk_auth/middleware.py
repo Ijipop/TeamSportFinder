@@ -1,8 +1,7 @@
-import os
-import requests
 import jwt  # type: ignore  # PyJWT package
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
+from .utils import verify_clerk_token, get_or_create_user_from_clerk
 
 
 class ClerkJWTAuthenticationMiddleware(MiddlewareMixin):
@@ -51,41 +50,37 @@ class ClerkJWTAuthenticationMiddleware(MiddlewareMixin):
         token = parts[1]
         
         try:
-            clerk_secret_key = os.getenv('CLERK_SECRET_KEY')
+            # Vérifier le token avec la fonction utilitaire
+            verification_result = verify_clerk_token(token)
             
-            if not clerk_secret_key:
-                return JsonResponse(
-                    {'error': 'Configuration Clerk manquante'},
-                    status=500
-                )
-            
-            # Décoder le token JWT
-            decoded_token = jwt.decode(
-                token,
-                options={"verify_signature": False}
-            )
-            
-            # Vérifier le token avec l'API Clerk
-            clerk_api_url = "https://api.clerk.com/v1/tokens/verify"
-            headers = {
-                'Authorization': f'Bearer {clerk_secret_key}',
-                'Content-Type': 'application/json'
-            }
-            data = {'token': token}
-            
-            response = requests.post(clerk_api_url, headers=headers, json=data)
-            
-            if response.status_code == 200:
-                # Token valide, ajouter les infos utilisateur à la requête
-                request.clerk_user_id = decoded_token.get('sub')
-                request.clerk_email = decoded_token.get('email')
-                request.clerk_role = decoded_token.get('metadata', {}).get('role', 'player')
-            else:
+            if not verification_result.get('valid'):
                 # Token invalide
+                error_message = verification_result.get('error', 'Token invalide')
                 return JsonResponse(
-                    {'error': 'Token invalide'},
+                    {'error': error_message},
                     status=401
                 )
+            
+            # Token valide, récupérer les infos
+            clerk_user_id = verification_result.get('user_id')
+            clerk_email = verification_result.get('email')
+            clerk_role = verification_result.get('role', 'player')
+            decoded_token = verification_result.get('decoded_token', {})
+            full_name = decoded_token.get('name') or decoded_token.get('full_name')
+            
+            # Récupérer ou créer l'utilisateur Django
+            user = get_or_create_user_from_clerk(
+                clerk_user_id=clerk_user_id,
+                email=clerk_email,
+                full_name=full_name,
+                role=clerk_role
+            )
+            
+            # Ajouter l'utilisateur Django à la requête
+            request.user = user
+            request.clerk_user_id = clerk_user_id
+            request.clerk_email = clerk_email
+            request.clerk_role = clerk_role
                 
         except jwt.ExpiredSignatureError:
             return JsonResponse(

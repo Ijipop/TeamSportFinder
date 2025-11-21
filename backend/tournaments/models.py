@@ -11,7 +11,8 @@ class Tournament(models.Model):
     city = models.CharField(max_length =100)
     start_date = models.DateField ()
     # organizer = models.ForeignKey(User , on_delete=models.CASCADE , related_name='tournaments ')
-    organizer = models.ForeignKey(User , on_delete=models.CASCADE , related_name='organized_tournaments')
+    organizer = models.ForeignKey(User , on_delete=models.CASCADE ,
+    related_name='tournaments')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -22,7 +23,8 @@ class Team(models.Model):
     id = models.UUIDField(primary_key=True , default=uuid.uuid4)
     name = models.CharField(max_length =200)
     # tournament = models.ForeignKey(Tournament , on_delete=models.CASCADE ,related_name='teams ')
-    tournament = models.ForeignKey(Tournament , on_delete=models.CASCADE ,related_name='teams')
+    tournament = models.ForeignKey(Tournament , on_delete=models.CASCADE ,
+        related_name='teams')
     max_capacity = models.IntegerField(default =15)
     current_capacity = models.IntegerField(default =0)
     members = models.ManyToManyField(User , related_name='teams',

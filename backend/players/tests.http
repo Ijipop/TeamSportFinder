@@ -1,0 +1,142 @@
+### Tests pour les Endpoints du Profil Joueur
+### Fichier REST Client pour VS Code / Cursor
+### 
+### IMPORTANT: Remplacez YOUR_TOKEN_HERE par votre vrai token JWT Clerk
+### Pour obtenir le token, connectez-vous via Clerk dans le frontend
+
+@baseUrl = http://localhost:8000
+@token = eyJhbGciOiJSUzI1NiIsImNhdCI6ImNsX0I3ZDRQRDExMUFBQSIsImtpZCI6Imluc18zNW5hMzdGUE9ya1JBc3Q0RkpYeU5JcExsWmsiLCJ0eXAiOiJKV1QifQ.eyJhenAiOiJodHRwOi8vbG9jYWxob3N0OjUxNzMiLCJleHAiOjE3NjM3NjIyMTMsImZ2YSI6WzExLC0xXSwiaWF0IjoxNzYzNzYyMTUzLCJpc3MiOiJodHRwczovL3NhZmUtd2VldmlsLTUuY2xlcmsuYWNjb3VudHMuZGV2IiwibmJmIjoxNzYzNzYyMTQzLCJzaWQiOiJzZXNzXzM1bzE3WG9XWTcyRzVGaGEyeEJrVGtDaGk4VSIsInN0cyI6ImFjdGl2ZSIsInN1YiI6InVzZXJfMzVuaVZ5R0RicVNMSGxWNWQ4NU5GbDJsWWZsIiwidiI6Mn0.Jvugg-bNr1gufjUuBjbFgcQeBee6uwoIIfmJ4e94fGRUBB1dDluinmdOGuWCSj4DFGkxgWwZX6HBNb1kUKdk3lFbKGqUd_M7pJmZ8wC9RAMrR8rzVjUPkmwL1I0KrQmyf1SbFUlEdc1xDX9rePn0QzlFpyVMKot4CYAlkP8gVU96DuPTgWVoOXABvH7MxPIpIPYSxuhfj3sw8FIC-KlzRUEpCng30tVEJd2XCOnmdNJxg97rS1750gVazvp2Vy0HCoX9C-4GTdxV5pxm7LId5e2Uznk2NenKHdNgnIwV6pLqqi14wkIcruI1pjb1O3G0cuud4hKOp-wD2VdTQBOLqQ
+### ============================================
+### 1. Créer un profil joueur
+### ============================================
+POST {{baseUrl}}/api/players/profile/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "city": "Paris",
+  "favorite_sport": "Football",
+  "level": "intermediate",
+  "position": "Attaquant"
+}
+
+### ============================================
+### 2. Récupérer mon profil
+### ============================================
+GET {{baseUrl}}/api/players/profile/
+Authorization: Bearer {{token}}
+
+### ============================================
+### 3. Mettre à jour complètement le profil (PUT)
+### ============================================
+PUT {{baseUrl}}/api/players/profile/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "city": "Lyon",
+  "favorite_sport": "Basketball",
+  "level": "advanced",
+  "position": "Meneur"
+}
+
+### ============================================
+### 4. Mettre à jour partiellement le profil (PATCH)
+### ============================================
+PATCH {{baseUrl}}/api/players/profile/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "city": "Marseille"
+}
+
+### ============================================
+### 5. Mettre à jour seulement le niveau
+### ============================================
+PATCH {{baseUrl}}/api/players/profile/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "level": "beginner"
+}
+
+### ============================================
+### 6. Mettre à jour le sport favori
+### ============================================
+PATCH {{baseUrl}}/api/players/profile/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "favorite_sport": "Tennis",
+  "position": "Joueur"
+}
+
+### ============================================
+### 7. Supprimer le profil
+### ============================================
+DELETE {{baseUrl}}/api/players/profile/
+Authorization: Bearer {{token}}
+
+### ============================================
+### 8. Test sans token (doit retourner 401)
+### ============================================
+GET {{baseUrl}}/api/players/profile/
+
+### ============================================
+### 9. Créer un profil avec niveau invalide (doit retourner 400)
+### ============================================
+POST {{baseUrl}}/api/players/profile/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "city": "Paris",
+  "favorite_sport": "Football",
+  "level": "invalid_level",
+  "position": "Attaquant"
+}
+
+### ============================================
+### 10. Créer un profil complet (tous les champs)
+### ============================================
+POST {{baseUrl}}/api/players/profile/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "city": "Toulouse",
+  "favorite_sport": "Rugby",
+  "level": "advanced",
+  "position": "Pilier"
+}
+
+### ============================================
+### 11. Créer un profil minimal (sans position)
+### ============================================
+POST {{baseUrl}}/api/players/profile/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "city": "Nice",
+  "favorite_sport": "Volley-ball",
+  "level": "intermediate"
+}
+
+### ============================================
+### 12. Mettre à jour tous les champs sauf un
+### ============================================
+PATCH {{baseUrl}}/api/players/profile/
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "city": "Bordeaux",
+  "favorite_sport": "Handball",
+  "level": "advanced",
+  "position": "Gardien"
+}
+
