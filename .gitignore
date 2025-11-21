@@ -13,4 +13,9 @@
 !.env.template
 !.env.sample
 
+# Python virtual environments
+env/
+venv/
+ENV/
+.venv/
 backend/env
