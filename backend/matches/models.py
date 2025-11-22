@@ -15,4 +15,6 @@ class Match(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'matches '
+        db_table = 'matches'
+        verbose_name = "match"
+        verbose_name_plural = "matches"
