@@ -14,9 +14,9 @@ interface LayoutProps
 const Layout: React.FC<LayoutProps> = ({ children, darkMode, toggleDarkMode }) =>
 {
     return (
-        <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", bgcolor: "background.default" }}>
             <Header darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
-            <Box component="main" sx={{ flexGrow: 1 }}>
+            <Box component="main" sx={{ flexGrow: 1, bgcolor: "background.default" }}>
                 {children}
             </Box>
             <Footer />
