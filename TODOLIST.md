@@ -18,16 +18,15 @@
 
 📌 **Référence** : pages 5 à 8 (diagramme et modèles)
 
-- [x] User (clerk_id, email, role)
-- [x] PlayerProfile
-- [x] Tournament
-- [x] Team
-- [x] JoinRequest ⚠️ _(cœur du système)_
-- [x] Match
+- [x] User (clerk_id, email, role)        <!-- accounts -->
+- [x] PlayerProfile                       <!-- players -->
+- [x] Tournament                          <!-- tournaments -->
+- [x] Team                                <!-- tournaments -->
+- [x] JoinRequest ⚠️ _(cœur du système)_  <!-- requestes -->
+- [x] Match                               <!-- matches -->
 
 **Faire ensuite :**
-- [x] `python manage.py makemigrations`
-- [x] `python manage.py migrate`
+
 - [x] `python manage.py makemigrations`
 - [x] `python manage.py migrate`
 

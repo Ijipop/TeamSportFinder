@@ -11,7 +11,8 @@ class User(models.Model):
     full_name = models.CharField(max_length=255)
     role = models.CharField(max_length=20, choices=[
         ('player', 'Joueur'),
-        ('organisateur', 'Organisateur')
+        # ('organisateur', 'Organisateur')
+        ('organizer', 'Organisateur')
     ])
     created_at = models.DateTimeField(auto_now_add=True)
     

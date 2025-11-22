@@ -31,7 +31,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')]
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -43,15 +44,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework',
-    'corsheaders',
-    # Apps du projet
+    
+    # Third party apps
+    'rest_framework',   # Django REST Framework
+    'corsheaders',      # CORS headers
+
+    # Local apps
     'clerk_auth',
     'accounts',
-    'players',
-    'tournaments',
-    'join_requests',
     'matches',
+    'payments',
+    'players',
+    'requestes',
+    'tournaments',
+    # 'accountsConfig.apps.AccountsConfig',
+    # 'matches.apps.MatchesConfig',
+    # 'payments.apps.PaymentsConfig',
+    # 'players.apps.PlayersConfig',
+    # 'requestes.apps.RequestesConfig',
+    # 'tournaments.apps.TournamentsConfig',
 ]
 
 MIDDLEWARE = [
@@ -238,5 +249,21 @@ LOGGING = {
     },
 }
 
+# Django REST Framework Configuration
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'clerk_auth.authentication.ClerkAuthentication',
+#     ],
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated',
+#     ],
+# }
+
+# Cache configuration (pour les JWKS)
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#         'LOCATION': 'unique-snowflake',
+#     }
+# }
 # Configuration REST_FRAMEWORK déjà définie plus haut (ligne 150)
-# Pas besoin de la redéfinir ici
