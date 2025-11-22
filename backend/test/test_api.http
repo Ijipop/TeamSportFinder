@@ -1,0 +1,47 @@
+### 1. Lister les tournois
+GET http://127.0.0.1:8000/api/tournaments/
+Content-Type: application/json
+
+
+### 2. Lister les équipes d’un tournoi
+GET http://127.0.0.1:8000/api/tournaments/1/teams/
+Content-Type: application/json
+
+
+### 3. Lister toutes les demandes d’adhésion
+GET http://127.0.0.1:8000/api/joinrequests/
+Content-Type: application/json
+
+
+### 4. Créer une nouvelle demande d’adhésion (Charlie → Dragons)
+POST http://127.0.0.1:8000/api/joinrequests/
+Content-Type: application/json
+
+{
+  "player": 3,
+  "team": 1,
+  "message": "Je veux rejoindre Les Dragons"
+}
+
+
+### 5. Accepter une demande d’adhésion (ex: JoinRequest id=1)
+PATCH http://127.0.0.1:8000/api/joinrequests/1/
+Content-Type: application/json
+
+{
+  "status": "accepted"
+}
+
+
+### 6. Rejeter une demande d’adhésion (ex: JoinRequest id=2)
+PATCH http://127.0.0.1:8000/api/joinrequests/2/
+Content-Type: application/json
+
+{
+  "status": "rejected"
+}
+
+
+### 7. Vérifier les membres d’une équipe (Les Dragons)
+GET http://127.0.0.1:8000/api/teams/1/
+Content-Type: application/json
