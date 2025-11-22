@@ -1,3 +1,4 @@
+# accounts/serializers.py
 """
 Serializers pour l'API REST
 """
