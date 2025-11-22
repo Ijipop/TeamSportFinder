@@ -15,7 +15,9 @@ class Tournament(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        db_table = 'tournaments '
+        db_table = 'tournaments'
+        verbose_name = "tournament"
+        verbose_name_plural = "tournaments"
 
 class Team(models.Model):
 # """Equipe dans un tournoi"""
@@ -37,4 +39,6 @@ class Team(models.Model):
         return self.current_capacity >= self.max_capacity
 
     class Meta:
-        db_table = 'teams '
+        db_table = 'teams'
+        verbose_name = "team"
+        verbose_name_plural = "teams"
