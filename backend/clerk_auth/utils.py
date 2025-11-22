@@ -113,9 +113,26 @@ def get_clerk_user_info(user_id):
         return None
 
 
+def get_user_from_clerk(clerk_user_id):
+    """
+    Récupère un utilisateur Django depuis l'ID Clerk (sans créer)
+    
+    Args:
+        clerk_user_id: L'ID de l'utilisateur Clerk
+        
+    Returns:
+        User ou None: L'instance User Django si trouvé, None sinon
+    """
+    try:
+        return User.objects.get(clerk_id=clerk_user_id)
+    except User.DoesNotExist:
+        return None
+
+
 def get_or_create_user_from_clerk(clerk_user_id, email, full_name=None, role='player'):
     """
     Récupère ou crée un utilisateur Django depuis les infos Clerk
+    Utilisé uniquement lors de l'inscription
     
     Args:
         clerk_user_id: L'ID de l'utilisateur Clerk

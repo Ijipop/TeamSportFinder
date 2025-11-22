@@ -1,18 +1,21 @@
 // Routeur principal de l'application
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-// import { useAuth } from "@clerk/clerk-react";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import React from "react";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Layout } from "../components/layout/Layout";
 import { AuthProvider, useAuth } from "../contexts/AuthContext";
 
-import React from "react";
-import { DashboardPage } from "../pages/DashboardPage";
+import { DashboardOrganiserPage } from "../pages/DashboardOrganiserPage";
+import { DashboardPlayerPage } from "../pages/DashboardPlayerPage";
+import { DashboardRedirectPage } from "../pages/DashboardRedirectPage";
 import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
 import { ProfilePage } from "../pages/ProfilePage";
+import { RegisterCompletePage } from "../pages/RegisterCompletePage";
 import { RegisterPage } from "../pages/RegisterPage";
+import { SelectRolePage } from "../pages/SelectRolePage";
 
 import { ConditionOfUsePage } from "../pages/ConditionOfUsePage";
 import { CookiesPolicyPage } from "../pages/CookiesPolicyPage";
@@ -23,14 +26,15 @@ import { WhoAreWe } from "../pages/WhoAreWePage";
 
 
 // Composant pour les routes protégées avec vérification de profil complet
-const ProtectedRoute: React.FC<{ children: React.ReactNode; requireCompleteProfile?: boolean }> = ({ 
-	children, 
-	requireCompleteProfile = false 
-}) =>
+const RoleProtectedRoute: React.FC<{ 
+	children: React.ReactNode; 
+	allowedRoles: string[];
+	allowNoRole?: boolean; // Permet l'accès même si l'utilisateur n'a pas de rôle
+}> = ({ children, allowedRoles, allowNoRole = false }) =>
 {
-	const { isAuthenticated, isLoading, user, isProfileComplete } = useAuth();
+	const { isAuthenticated, isLoading, user, clerkUser } = useAuth();
+	const location = useLocation();
 
-	// Afficher un état de chargement pendant l'initialisation
 	if (isLoading)
 	{
 		return (
@@ -45,30 +49,81 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode; requireCompleteProfi
 		);
 	}
 
-	// Rediriger vers login si non authentifié
+	// Si allowNoRole est true, on permet l'accès même si user est null (utilisateur connecté avec Clerk mais pas encore dans Django)
+	if (allowNoRole)
+	{
+		// Vérifier seulement que l'utilisateur est connecté avec Clerk
+		if (!clerkUser)
+		{
+			return <Navigate to="/login" replace />;
+		}
+		// Permettre l'accès même si user est null
+		return <>{children}</>;
+	}
+
+	// Pour les routes normales, vérifier l'authentification complète
+	// Si l'utilisateur est connecté avec Clerk mais n'a pas encore de compte Django,
+	// rediriger vers dashboard-redirect pour vérifier le backend
+	if (clerkUser && !user && !location.pathname.startsWith('/dashboard-redirect') && !location.pathname.startsWith('/select-role'))
+	{
+		return <Navigate to="/dashboard-redirect" replace />;
+	}
+
 	if (!isAuthenticated)
 	{
 		return <Navigate to="/login" replace />;
 	}
 
-	// Vérifier si le profil est complet si requis
-	// IMPORTANT: isProfileComplete vérifie déjà si l'email doit être vérifié
-	// (seulement pour email/password, pas pour OAuth)
-	if (requireCompleteProfile && user && !isProfileComplete(user))
+	// Si l'utilisateur existe mais n'a pas de rôle, rediriger vers dashboard-redirect d'abord
+	// pour vérifier le backend avant de rediriger vers select-role
+	if (user && !user.role && !location.pathname.startsWith('/select-role') && !location.pathname.startsWith('/dashboard-redirect'))
 	{
-		// Rediriger vers le profil si le profil n'est pas complet
-		// Note: Vous pouvez créer une page /onboarding si nécessaire
-		return <Navigate to="/profile" replace />;
+		// Si l'utilisateur est connecté avec Clerk, vérifier le backend d'abord
+		if (clerkUser)
+		{
+			return <Navigate to="/dashboard-redirect" replace />;
+		}
+		// Sinon, rediriger vers select-role
+		return <Navigate to="/select-role" replace />;
 	}
 
-	// Rendre les enfants uniquement si authentifié (et profil complet si requis)
+	// Si l'utilisateur a un rôle mais n'est pas autorisé, rediriger vers le bon dashboard
+	// Ne pas rediriger si on est déjà sur le dashboard approprié pour éviter les boucles
+	if (user && user.role && !allowedRoles.includes(user.role))
+	{
+		// Rediriger vers le dashboard approprié selon le rôle
+		const dashboardPath = user.role === 'organizer' ? '/dashboard-organizer' : '/dashboard';
+		// Ne rediriger que si on n'est pas déjà sur le bon dashboard ou sur select-role
+		if (location.pathname !== dashboardPath && 
+			!location.pathname.startsWith('/dashboard-redirect') && 
+			!location.pathname.startsWith('/select-role'))
+		{
+			return <Navigate to={dashboardPath} replace />;
+		}
+	}
+	
+	// Si l'utilisateur a un rôle valide et qu'on est sur select-role ou dashboard-redirect, rediriger vers le dashboard
+	if (user && user.role && allowedRoles.includes(user.role) && 
+		(location.pathname.startsWith('/select-role') || location.pathname.startsWith('/dashboard-redirect')))
+	{
+		const dashboardPath = user.role === 'organizer' ? '/dashboard-organizer' : '/dashboard';
+		return <Navigate to={dashboardPath} replace />;
+	}
+
 	return <>{children}</>;
+};
+
+// Composant pour rediriger vers le bon dashboard après connexion
+const DashboardRedirect: React.FC = () =>
+{
+	return <DashboardRedirectPage />;
 };
 
 // Composant pour les routes publiques
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 {
-	const { isLoading } = useAuth();
+	const { isLoading, clerkUser } = useAuth();
+	const location = useLocation();
 
 	if (isLoading)
 	{
@@ -82,6 +137,16 @@ const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 				Chargement...
 			</div>
 		);
+	}
+
+	// Si l'utilisateur est connecté avec Clerk (même sans compte Django) et accède à login/register, rediriger vers dashboard-redirect
+	if (clerkUser && (location.pathname.startsWith('/login') || location.pathname.startsWith('/register')))
+	{
+		// Ne pas rediriger si on est déjà sur register/complete ou select-role
+		if (!location.pathname.startsWith('/register/complete') && !location.pathname.startsWith('/select-role'))
+		{
+			return <DashboardRedirect />;
+		}
 	}
 
 	return <>{children}</>;
@@ -172,7 +237,39 @@ export const AppRouter: React.FC = () =>
 									</PublicRoute>
 								}
 							/>
-							
+							{/* Route pour compléter l'inscription */}
+							<Route
+								path="/register/complete"
+								element={
+									<PublicRoute>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<RegisterCompletePage />
+										</Layout>
+									</PublicRoute>
+								}
+							/>
+							{/* Route pour sélectionner le rôle lors de la connexion */}
+							<Route
+								path="/select-role"
+								element={
+									<RoleProtectedRoute allowedRoles={['player', 'organizer']} allowNoRole={true}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<SelectRolePage />
+										</Layout>
+									</RoleProtectedRoute>
+								}
+							/>
+							{/* Route pour rediriger vers le dashboard après connexion */}
+							<Route
+								path="/dashboard-redirect"
+								element={
+									<RoleProtectedRoute allowedRoles={['player', 'organizer']}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<DashboardRedirectPage />
+										</Layout>
+									</RoleProtectedRoute>
+								}
+							/>
 							<Route
 								path="/who-are-we"
 								element={
@@ -238,21 +335,31 @@ export const AppRouter: React.FC = () =>
 							<Route
 								path="/dashboard"
 								element={
-									<ProtectedRoute requireCompleteProfile={false}>
+									<RoleProtectedRoute allowedRoles={['player']}>
 										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
-											<DashboardPage />
+											<DashboardPlayerPage />
 										</Layout>
-									</ProtectedRoute>
+									</RoleProtectedRoute>
+								}
+							/>
+							<Route
+								path="/dashboard-organizer"
+								element={
+									<RoleProtectedRoute allowedRoles={['organizer']}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<DashboardOrganiserPage />
+										</Layout>
+									</RoleProtectedRoute>
 								}
 							/>
 							<Route
 								path="/profile"
 								element={
-									<ProtectedRoute requireCompleteProfile={false}>
+									<RoleProtectedRoute allowedRoles={['player', 'organizer']}>
 										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
 											<ProfilePage />
 										</Layout>
-									</ProtectedRoute>
+									</RoleProtectedRoute>
 								}
 							/>
 						</Routes>

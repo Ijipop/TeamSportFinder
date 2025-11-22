@@ -1,7 +1,7 @@
 import jwt  # type: ignore  # PyJWT package
 from django.http import JsonResponse
 from django.utils.deprecation import MiddlewareMixin
-from .utils import verify_clerk_token, get_or_create_user_from_clerk
+from .utils import verify_clerk_token, get_user_from_clerk
 
 
 class ClerkJWTAuthenticationMiddleware(MiddlewareMixin):
@@ -68,19 +68,24 @@ class ClerkJWTAuthenticationMiddleware(MiddlewareMixin):
             decoded_token = verification_result.get('decoded_token', {})
             full_name = decoded_token.get('name') or decoded_token.get('full_name')
             
-            # Récupérer ou créer l'utilisateur Django
-            user = get_or_create_user_from_clerk(
-                clerk_user_id=clerk_user_id,
-                email=clerk_email,
-                full_name=full_name,
-                role=clerk_role
-            )
+            # Récupérer l'utilisateur Django (sans créer)
+            # Si l'utilisateur n'existe pas, il devra s'inscrire d'abord
+            user = get_user_from_clerk(clerk_user_id)
             
-            # Ajouter l'utilisateur Django à la requête
-            request.user = user
-            request.clerk_user_id = clerk_user_id
-            request.clerk_email = clerk_email
-            request.clerk_role = clerk_role
+            if user:
+                # Ajouter l'utilisateur Django à la requête
+                request.user = user
+                request.clerk_user_id = clerk_user_id
+                request.clerk_email = clerk_email
+                request.clerk_role = clerk_role
+            else:
+                # L'utilisateur n'existe pas dans la base de données
+                # On ne bloque pas la requête ici, mais l'endpoint vérifiera
+                # On stocke juste les infos Clerk pour référence
+                request.clerk_user_id = clerk_user_id
+                request.clerk_email = clerk_email
+                request.clerk_role = clerk_role
+                # request.user restera AnonymousUser (géré par DRF)
                 
         except jwt.ExpiredSignatureError:
             return JsonResponse(

@@ -13,6 +13,7 @@ export interface User
     updatedAt: Date;
 	avatar?: string;
 	tokenBalance?: number; // Solde de tokens (1 token = 1 cent)
+	role?: 'player' | 'organizer'; // Rôle de l'utilisateur
 }
 
 // Types pour l'API

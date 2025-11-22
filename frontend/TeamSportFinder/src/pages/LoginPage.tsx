@@ -1,6 +1,6 @@
+import { SignIn } from '@clerk/clerk-react';
+import { Box, Container } from "@mui/material";
 import React from "react";
-import { Box, Container, Typography } from "@mui/material";
-import { SignIn } from '@clerk/clerk-react'
 
 const LoginPage: React.FC = () => {
 	return (
@@ -18,6 +18,7 @@ const LoginPage: React.FC = () => {
 					routing="path"
 					path="/login"
 					signUpUrl="/register"
+					afterSignInUrl="/dashboard-redirect"
 				/>
 			</Box>
 		</Container>
@@ -25,3 +26,4 @@ const LoginPage: React.FC = () => {
 };
 
 export { LoginPage };
+

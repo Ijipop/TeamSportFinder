@@ -211,6 +211,12 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 
+# Permettre toutes les origines en développement (à restreindre en production)
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Seulement en mode DEBUG
+
+# Préflight cache duration
+CORS_PREFLIGHT_MAX_AGE = 86400
+
 # =============================================================================
 # CLERK CONFIGURATION
 # =============================================================================
