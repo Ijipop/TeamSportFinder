@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Container, Typography } from "@mui/material";
+import { SignIn } from '@clerk/clerk-react'
 
 const LoginPage: React.FC = () => {
 	return (
@@ -10,7 +11,15 @@ const LoginPage: React.FC = () => {
 				px: { xs: 2, sm: 3 },
 			}}
 		>
-			<Typography variant="h1">LoginPage</Typography>
+			{/* <Typography variant="h1">LoginPage</Typography> */}
+			
+			<Box className="flex justify-center gap-4">
+				<SignIn 
+					routing="path"
+					path="/login"
+					signUpUrl="/register"
+				/>
+			</Box>
 		</Container>
     );
 };
