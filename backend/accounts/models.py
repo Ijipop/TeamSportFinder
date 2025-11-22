@@ -1,5 +1,10 @@
 import uuid
 from django.db import models
+from django.core.exceptions import ValidationError
+
+# def validate_role(value):
+#     if value not in ["player", "organizer"]:
+#         raise ValidationError("Le rôle doit être 'player' ou 'organizer'.")
 
 class User(models.Model):
     """
@@ -9,11 +14,13 @@ class User(models.Model):
     clerk_id = models.CharField(max_length=255, unique=True)
     email = models.EmailField(unique=True)
     full_name = models.CharField(max_length=255)
+    
     role = models.CharField(max_length=20, choices=[
         ('player', 'Joueur'),
-        # ('organisateur', 'Organisateur')
         ('organizer', 'Organisateur')
-    ])
+    ],
+        # validators=[validate_role]
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     
     # Propriétés pour compatibilité avec DRF et Django auth
@@ -38,11 +45,19 @@ class User(models.Model):
         Toujours True pour les utilisateurs créés depuis Clerk
         """
         return True
+    
+    def clean(self):
+        """
+        Validators pour cohérence des rôles.
+        """
+        # Exemple : un joueur ne peut pas avoir un clerk_id vide
+        if self.role == "player" and not self.clerk_id:
+            raise ValidationError("Un joueur doit avoir un clerk_id valide.")
 
     class Meta:
         db_table = 'users'
         verbose_name = "User"
         verbose_name_plural = "Users"
 
-        def __str__(self):
-            return self.full_name or self.email
+    def __str__(self):
+        return self.full_name or self.email
