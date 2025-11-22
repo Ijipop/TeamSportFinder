@@ -61,3 +61,16 @@ class User(models.Model):
 
     def __str__(self):
         return self.full_name or self.email
+    
+# Maybe needed?
+    
+# class PlayerProfile(models.Model):
+#     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
+#     city = models.CharField(max_length=100)
+#     main_sport = models.CharField(max_length=100)
+#     level = models.CharField(max_length=20, choices=[
+#         ('beginner', 'Débutant'),
+#         ('intermediate', 'Intermédiaire'),
+#         ('advanced', 'Avancé')
+#     ])
+#     preferred_position = models.CharField(max_length=100, blank=True, null=True)
