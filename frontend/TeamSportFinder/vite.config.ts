@@ -6,7 +6,7 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Chercher le fichier .env dans le répertoire parent (frontend/)
+  // Chercher le fichier .env à la racine du projet
   envDir: resolve(fileURLToPath(new URL('.', import.meta.url)), '../..'),
   resolve: {
     // Forcer une seule copie de React pour éviter les erreurs "Invalid hook call"

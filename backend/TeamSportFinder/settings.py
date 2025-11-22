@@ -32,6 +32,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 
 # Application definition
@@ -49,12 +50,19 @@ INSTALLED_APPS = [
     'corsheaders',      # CORS headers
 
     # Local apps
-    'accountsConfig.apps.AccountsConfig',
-    'matches.apps.MatchesConfig',
-    'payments.apps.PaymentsConfig',
-    'players.apps.PlayersConfig',
-    'requestes.apps.RequestesConfig',
-    'tournaments.apps.TournamentsConfig',
+    'clerk_auth',
+    'accounts',
+    'matches',
+    'payments',
+    'players',
+    'requestes',
+    'tournaments',
+    # 'accountsConfig.apps.AccountsConfig',
+    # 'matches.apps.MatchesConfig',
+    # 'payments.apps.PaymentsConfig',
+    # 'players.apps.PlayersConfig',
+    # 'requestes.apps.RequestesConfig',
+    # 'tournaments.apps.TournamentsConfig',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +72,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'clerk_auth.middleware.ClerkJWTAuthenticationMiddleware',  # Middleware JWT Clerk
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -151,7 +160,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # =============================================================================
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'courses.authentication.ClerkJWTAuthentication',  # Notre auth custom
+        'clerk_auth.authentication.ClerkAuthentication',  # Auth Clerk JWT
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -175,9 +184,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # CORS CONFIGURATION
 # =============================================================================
 # Autoriser le frontend React à faire des requêtes
-CORS_ALLOWED_ORIGINS = [
-    os.getenv('FRONTEND_URL', 'http://localhost:5173'),
-]
+# Supporte plusieurs origines (développement et production)
+frontend_urls = os.getenv('FRONTEND_URL', 'http://localhost:5173,http://localhost:3000')
+CORS_ALLOWED_ORIGINS = [url.strip() for url in frontend_urls.split(',')]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -241,11 +250,20 @@ LOGGING = {
 }
 
 # Django REST Framework Configuration
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'clerk_auth.authentication.ClerkAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'clerk_auth.authentication.ClerkAuthentication',
+#     ],
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated',
+#     ],
+# }
+
+# Cache configuration (pour les JWKS)
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#         'LOCATION': 'unique-snowflake',
+#     }
+# }
+# Configuration REST_FRAMEWORK déjà définie plus haut (ligne 150)

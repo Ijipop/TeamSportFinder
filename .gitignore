@@ -19,3 +19,6 @@ venv/
 ENV/
 .venv/
 backend/env
+
+# For temp docs
+/temp
