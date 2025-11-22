@@ -42,17 +42,29 @@ const RegisterCompletePage: React.FC = () =>
 			}
 
 			try {
-				// Récupérer le rôle depuis les paramètres d'URL ou les métadonnées
+				// Récupérer le rôle depuis (dans l'ordre de priorité) :
+				// 1. Les paramètres d'URL
+				// 2. sessionStorage (pour les cas où l'URL est perdue après validation email)
+				// 3. Les métadonnées Clerk
 				let role = searchParams.get('role') || 
+					sessionStorage.getItem('pendingRole') ||
 					(clerkUser.publicMetadata?.role as string) || 
 					(clerkUser.unsafeMetadata?.role as string);
 				
+				// Nettoyer sessionStorage après récupération
+				if (sessionStorage.getItem('pendingRole')) {
+					sessionStorage.removeItem('pendingRole');
+				}
+				
 				// Si aucun rôle n'est trouvé, rediriger vers la page de sélection de rôle
 				if (!role || (role !== 'player' && role !== 'organizer')) {
+					console.error("Aucun rôle trouvé. URL params:", searchParams.toString(), "sessionStorage:", sessionStorage.getItem('pendingRole'));
 					navigate('/select-role', { replace: true });
 					setLoading(false);
 					return;
 				}
+				
+				console.log("Rôle récupéré pour la création:", role);
 
 				// Mettre à jour les métadonnées si nécessaire
 				// Note: publicMetadata ne peut pas être mis à jour côté client

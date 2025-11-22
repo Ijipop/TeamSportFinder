@@ -59,7 +59,7 @@ class ClerkAuthentication(authentication.BaseAuthentication):
         request.clerk_user_id = clerk_user_id
         request.clerk_email = clerk_email
         request.clerk_role = clerk_role
-        
+
         if not user:
             # L'utilisateur n'existe pas dans la base de données
             # Créer un utilisateur anonyme mais avec les infos Clerk
@@ -72,4 +72,3 @@ class ClerkAuthentication(authentication.BaseAuthentication):
         
         # Retourner l'utilisateur Django et le token
         return (user, token)
-
