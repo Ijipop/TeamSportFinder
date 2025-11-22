@@ -64,6 +64,7 @@ const RoleProtectedRoute: React.FC<{
 	// Pour les routes normales, vérifier l'authentification complète
 	// Si l'utilisateur est connecté avec Clerk mais n'a pas encore de compte Django,
 	// rediriger vers dashboard-redirect pour vérifier le backend
+	// MAIS ne pas rediriger si on vient juste de créer l'utilisateur (on est sur select-role)
 	if (clerkUser && !user && !location.pathname.startsWith('/dashboard-redirect') && !location.pathname.startsWith('/select-role'))
 	{
 		return <Navigate to="/dashboard-redirect" replace />;
@@ -76,6 +77,7 @@ const RoleProtectedRoute: React.FC<{
 
 	// Si l'utilisateur existe mais n'a pas de rôle, rediriger vers dashboard-redirect d'abord
 	// pour vérifier le backend avant de rediriger vers select-role
+	// MAIS ne pas rediriger si on vient juste de créer l'utilisateur (on est sur select-role)
 	if (user && !user.role && !location.pathname.startsWith('/select-role') && !location.pathname.startsWith('/dashboard-redirect'))
 	{
 		// Si l'utilisateur est connecté avec Clerk, vérifier le backend d'abord

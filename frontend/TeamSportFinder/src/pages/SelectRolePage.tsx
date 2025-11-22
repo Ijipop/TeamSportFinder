@@ -15,15 +15,33 @@ const SelectRolePage: React.FC = () => {
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const hasCheckedRef = useRef(false);
+	const pendingRoleRef = useRef<'player' | 'organizer' | null>(null);
 
 	// Vérifier immédiatement si l'utilisateur a déjà un rôle
 	useEffect(() =>
 	{
-		// Si l'utilisateur a déjà un rôle, rediriger immédiatement (ne pas attendre isLoading)
-		if (user && user.role)
+		// Si on a un rôle en attente et que l'utilisateur a maintenant ce rôle, rediriger
+		if (pendingRoleRef.current && user && user.role === pendingRoleRef.current)
+		{
+			pendingRoleRef.current = null;
+			const dashboardPath = user.role === 'organizer' ? '/dashboard-organizer' : '/dashboard';
+			const currentPath = window.location.pathname;
+			if (currentPath !== dashboardPath)
+			{
+				navigate(dashboardPath, { replace: true });
+			}
+			return;
+		}
+
+		// Si l'utilisateur a déjà un rôle (sans être en attente), rediriger immédiatement
+		if (user && user.role && !pendingRoleRef.current)
 		{
 			const dashboardPath = user.role === 'organizer' ? '/dashboard-organizer' : '/dashboard';
-			navigate(dashboardPath, { replace: true });
+			const currentPath = window.location.pathname;
+			if (currentPath !== dashboardPath)
+			{
+				navigate(dashboardPath, { replace: true });
+			}
 			return;
 		}
 
@@ -33,24 +51,39 @@ const SelectRolePage: React.FC = () => {
 			return;
 		}
 
-		// Si l'utilisateur n'est pas chargé après le chargement, rediriger vers dashboard-redirect
-		// pour laisser DashboardRedirectPage gérer la vérification (évite les appels multiples)
+		// Si l'utilisateur n'est pas chargé après le chargement et qu'on a un clerkUser,
+		// cela signifie qu'il n'a pas encore de compte dans le backend
+		// On reste sur cette page pour qu'il sélectionne son rôle
+		// Ne pas rediriger vers dashboard-redirect pour éviter les boucles
 		if (!user && clerkUser && !hasCheckedRef.current)
 		{
 			hasCheckedRef.current = true;
-			// Rediriger immédiatement vers dashboard-redirect sans délai
-			navigate('/dashboard-redirect', { replace: true });
+			// Ne rien faire, rester sur cette page
 		}
-	}, [user, clerkUser, isLoading, navigate]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user, clerkUser, isLoading]); // navigate est stable et n'a pas besoin d'être dans les dépendances
 
-	// Afficher un loader pendant la vérification initiale
-	if (isLoading || (hasCheckedRef.current && !user))
+	// Afficher un loader seulement pendant la vérification initiale
+	// Si on a un clerkUser mais pas de user, c'est normal (nouvel utilisateur), on affiche le formulaire
+	if (isLoading && !hasCheckedRef.current)
 	{
 		return (
 			<Container sx={{ mt: 10, textAlign: 'center' }}>
 				<CircularProgress />
 				<Typography variant="h6" sx={{ mt: 2 }}>
 					Vérification...
+				</Typography>
+			</Container>
+		);
+	}
+
+	// Si on n'a pas de clerkUser, on ne peut pas continuer
+	if (!clerkUser)
+	{
+		return (
+			<Container sx={{ mt: 10, textAlign: 'center' }}>
+				<Typography variant="h6" sx={{ mt: 2 }}>
+					Vous devez être connecté pour choisir votre rôle.
 				</Typography>
 			</Container>
 		);
@@ -97,16 +130,22 @@ const SelectRolePage: React.FC = () => {
 			console.log("Rôle retourné par le backend:", backendUser.role);
 			console.log("Rôle final utilisé:", finalRole);
 
+			// Marquer le rôle comme en attente pour que le useEffect redirige quand il sera mis à jour
+			pendingRoleRef.current = finalRole;
+
 			// Synchroniser avec le backend
 			await refreshUser();
 
-			// Attendre un peu pour que l'état soit mis à jour
-			await new Promise(resolve => setTimeout(resolve, 100));
-
-			// Rediriger vers le dashboard approprié en utilisant le rôle du backend
-			const dashboardPath = finalRole === 'organizer' ? '/dashboard-organizer' : '/dashboard';
-			console.log("Redirection vers:", dashboardPath);
-			navigate(dashboardPath, { replace: true });
+			// Le useEffect écoutera les changements de user et redirigera automatiquement
+			// Mais si après 1 seconde l'utilisateur n'est toujours pas mis à jour, rediriger quand même
+			setTimeout(() => {
+				if (pendingRoleRef.current === finalRole) {
+					// L'utilisateur n'a pas encore été mis à jour, rediriger quand même
+					pendingRoleRef.current = null;
+					const dashboardPath = finalRole === 'organizer' ? '/dashboard-organizer' : '/dashboard';
+					navigate(dashboardPath, { replace: true });
+				}
+			}, 1000);
 		}
 		catch (err)
 		{
