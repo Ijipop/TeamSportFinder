@@ -69,14 +69,14 @@ const Header = ({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMod
 			<Container maxWidth="lg" sx={{ px: { xs: 2, sm: 3 } }}>
 				<Toolbar sx={{ px: 0 }}>
 					<Box
-					component="img"
-					src={logoImage}
-					// alt="Need My Hammer Logo"
-					sx={{
-						height: 60,
-						width: 'auto',
-						mr: 2,
-						cursor: 'pointer'
+						component="img"
+						src={logoImage}
+						// alt="Need My Hammer Logo"
+						sx={{
+							height: 60,
+							width: 'auto',
+							mr: 2,
+							cursor: 'pointer'
 					}}
 						onClick={() => navigate('/')}
 					/>
@@ -120,21 +120,14 @@ const Header = ({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMod
 									to="/profile"
 									sx={{ color: darkMode ? "text.primary" : "white" }}
 								>
-									{/* {t("navigation.profile")} */}
+									{/* {"Profile"} */}
 								<Avatar
-                                        sx={{ width: 50, height: 50, mr: 2, bgcolor: "primary.main" }}
-                                        src={user?.avatar}
-                                    >
-                                        {user?.firstName?.[0]}{user?.lastName?.[0]}
-                                    </Avatar>
+										sx={{ width: 50, height: 50, mr: 2, bgcolor: "primary.main" }}
+										src={user?.avatar}
+									>
+									{user?.firstName?.[0]}{user?.lastName?.[0]}
+								</Avatar>
 								</Button>								
-								{/* <Button
-									color="inherit"
-									onClick={handleLogout}
-									sx={{ color: darkMode ? "text.primary" : "white" }}
-								>
-									Déconnexion
-								</Button> */}
 							</>
 						) : (
 							<>
@@ -146,34 +139,8 @@ const Header = ({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMod
 								>
 									{"Connexion"}
 								</Button>
-								{/* <Button
-									color="inherit"
-									component={Link}
-									to="/register"
-									sx={{ color: darkMode ? "text.primary" : "white" }}
-								>
-									{t("navigation.register")}
-								</Button> */}
 							</>
 						)}
-						
-						
-						
-						{/* <Menu
-							anchorEl={languageMenuAnchor}
-							open={languageMenuOpen}
-							onClose={handleLanguageMenuClose}
-						>
-							{availableLanguages.map((lang: string) => (
-								<MenuItem
-									key={lang}
-									onClick={() => handleLanguageChange(lang)}
-									selected={currentLanguage === lang}
-								>
-									{lang === "fr" ? "Français" : "Anglais"}
-								</MenuItem>
-							))}
-						</Menu> */}
 					</Box>
 
 					{/* Bouton mode sombre */}
@@ -268,52 +235,8 @@ const Header = ({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMod
 									>
 										Connexion
 									</Button>
-									{/* <Button
-										color="inherit"
-										component={Link}
-										to="/register"
-										onClick={closeMobileMenu}
-										fullWidth
-										sx={{ color: "text.primary" }}
-									>
-										Inscription
-									</Button> */}
 								</>
 							)}
-							
-							{/* Séparateur */}
-							<Box sx={{ borderTop: 1, borderColor: "divider", my: 1 }} />
-							
-							{/* Sélecteur de langue mobile
-							<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-								<Typography variant="subtitle2" sx={{ color: "text.secondary", px: 1 }}>
-									{t("languages.french")} / {t("languages.english")}
-								</Typography>
-								<Box sx={{ display: "flex", gap: 1 }}>
-									<Button
-										variant={currentLanguage === "fr" ? "contained" : "outlined"}
-										size="small"
-										onClick={() => {
-											handleLanguageChange("fr");
-											closeMobileMenu();
-										}}
-										sx={{ flex: 1 }}
-									>
-										{t("languages.french")}
-									</Button>
-									<Button
-										variant={currentLanguage === "en" ? "contained" : "outlined"}
-										size="small"
-										onClick={() => {
-											handleLanguageChange("en");
-											closeMobileMenu();
-										}}
-										sx={{ flex: 1 }}
-									>
-										{t("languages.english")}
-									</Button>
-								</Box>
-							</Box> */}
 						</Stack>
 					</Box>
 				)}
