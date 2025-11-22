@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Typography } from "@mui/material";
 
-const DashboardPage: React.FC = () =>
+const DashboardOrganiserPage: React.FC = () =>
 {
 	return (
 		<Container
@@ -11,9 +11,9 @@ const DashboardPage: React.FC = () =>
 				px: { xs: 2, sm: 3 },
 			}}
 		>
-			<Typography variant="h1">Dashboard</Typography>
+			<Typography variant="h1">Dashboard Organisateur</Typography>
 		</Container>
 	);
 };
 
-export { DashboardPage };
+export { DashboardOrganiserPage };

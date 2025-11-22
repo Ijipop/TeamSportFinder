@@ -2,8 +2,10 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter
 from accounts import views
 
-# Exemple : si tu as un UserViewSet
 router = DefaultRouter()
 # router.register(r'users', views.UserViewSet, basename='users')
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('me/', views.get_current_user, name='current-user'),
+    path('create/', views.create_user_from_clerk, name='create-user'),
+] + router.urls

@@ -3,9 +3,9 @@ import { AppBar, Box, Button, Container, IconButton, Stack, Toolbar, Typography 
 import React from "react";
 import { Link } from "react-router-dom";
 
+import { Avatar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { Avatar } from "@mui/material";
 
 // Composant Header responsive avec navigation conditionnelle et mode sombre
 const Header = ({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMode: () => void }) =>
@@ -109,7 +109,7 @@ const Header = ({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMod
 								<Button
 									color="inherit"
 									component={Link}
-									to="/dashboard"
+									to={user?.role === 'organizer' ? '/dashboard-organizer' : '/dashboard'}
 									sx={{ color: darkMode ? "text.primary" : "white" }}
 								>
 									{"Dashboard"}
@@ -207,12 +207,22 @@ const Header = ({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMod
 									<Button
 										color="inherit"
 										component={Link}
-										to="/dashboard"
+										to={user?.role === 'organizer' ? '/dashboard-organizer' : '/dashboard'}
 										onClick={closeMobileMenu}
 										fullWidth
 										sx={{ color: "text.primary" }}
 									>
 										Dashboard
+									</Button>
+									<Button
+										color="inherit"
+										component={Link}
+										to="/profile"
+										onClick={closeMobileMenu}
+										fullWidth
+										sx={{ color: "text.primary" }}
+									>
+										Profil
 									</Button>
 									<Button
 										color="inherit"

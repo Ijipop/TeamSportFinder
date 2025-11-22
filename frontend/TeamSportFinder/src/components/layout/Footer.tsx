@@ -24,7 +24,7 @@ const Footer: React.FC = () =>
 			<Container sx={{ px: { xs: 2, sm: 3 }, width: "100%" }}>
 				<Grid container spacing={4} justifyContent="center">
 					{/* Section À propos */}
-					<Grid item xs={12} sm={6} md={3}>
+					<Grid size={{ xs: 12, sm: 6, md: 3 }}>
 						<Box sx={{ textAlign: "center" }}>
 							<Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
 								{"À propos"}
@@ -43,7 +43,7 @@ const Footer: React.FC = () =>
 					</Grid>
 
 					{/* Section Liens utiles */}
-					<Grid item xs={12} sm={6} md={3}>
+					<Grid size={{ xs: 12, sm: 6, md: 3 }}>
 						<Box sx={{ textAlign: "center" }}>
 							<Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
 								{"Liens utiles"}
@@ -70,7 +70,7 @@ const Footer: React.FC = () =>
 					</Grid>
 
 					{/* Section Légal */}
-					<Grid item xs={12} sm={6} md={3}>
+					<Grid size={{ xs: 12, sm: 6, md: 3 }}>
 						<Box sx={{ textAlign: "center" }}>
 							<Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
 								{"Légal"}
@@ -105,7 +105,7 @@ const Footer: React.FC = () =>
 					</Grid>
 
 					{/* Section Contact */}
-					<Grid item xs={12} sm={6} md={3}>
+					<Grid size={{ xs: 12, sm: 6, md: 3 }}>
 						<Box sx={{ textAlign: "center" }}>
 							<Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
 								{"Contact"}
