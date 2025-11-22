@@ -16,3 +16,5 @@ class PlayerProfile(models.Model):
 
     class Meta:
         db_table = 'player_profiles'
+        verbose_name = "player"
+        verbose_name_plural = "players"
