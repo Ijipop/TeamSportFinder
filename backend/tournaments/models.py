@@ -5,14 +5,13 @@ from accounts.models import User
 
 class Tournament(models.Model):
 # """Tournoi/Ligue cree par un organisateur"""
-    id = models.UUIDField(primary_key=True , default=uuid.uuid4)
-    name = models.CharField(max_length =200)
-    sport = models.CharField(max_length =50)
-    city = models.CharField(max_length =100)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length = 200)
+    sport = models.CharField(max_length = 50)
+    city = models.CharField(max_length = 100)
     start_date = models.DateField ()
     # organizer = models.ForeignKey(User , on_delete=models.CASCADE , related_name='tournaments ')
-    organizer = models.ForeignKey(User , on_delete=models.CASCADE ,
-    related_name='tournaments')
+    organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='tournaments')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -20,15 +19,13 @@ class Tournament(models.Model):
 
 class Team(models.Model):
 # """Equipe dans un tournoi"""
-    id = models.UUIDField(primary_key=True , default=uuid.uuid4)
-    name = models.CharField(max_length =200)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    name = models.CharField(max_length = 200)
     # tournament = models.ForeignKey(Tournament , on_delete=models.CASCADE ,related_name='teams ')
-    tournament = models.ForeignKey(Tournament , on_delete=models.CASCADE ,
-        related_name='teams')
-    max_capacity = models.IntegerField(default =15)
-    current_capacity = models.IntegerField(default =0)
-    members = models.ManyToManyField(User , related_name='teams',
-        blank=True)
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name='teams')
+    max_capacity = models.IntegerField(default = 15)
+    current_capacity = models.IntegerField(default = 0)
+    members = models.ManyToManyField(User, related_name='teams',blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property

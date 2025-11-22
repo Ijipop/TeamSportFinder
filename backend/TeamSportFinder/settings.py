@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'matches',
     'payments',
     'players',
-    'join_requests',
+    'requestes',
     'tournaments',
     # 'accountsConfig.apps.AccountsConfig',
     # 'matches.apps.MatchesConfig',

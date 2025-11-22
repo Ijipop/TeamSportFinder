@@ -7,10 +7,10 @@
 - [x] Créer le repo Git (backend + frontend)
 - [x] Installer Django + DRF
 - [x] Configurer PostgreSQL Neon
-- [ ] Installer et configurer Clerk (clé publique + JWT)
-- [ ] Créer projet React + Vite
-- [ ] Ajouter Tailwind ou Material UI
-- [ ] Ajouter Axios avec intercepteur JWT
+- [x] Installer et configurer Clerk (clé publique + JWT)
+- [x] Créer projet React + Vite
+- [x] Ajouter Tailwind ou Material UI
+- [x] Ajouter Axios avec intercepteur JWT
 
 ---
 
@@ -18,14 +18,15 @@
 
 📌 **Référence** : pages 5 à 8 (diagramme et modèles)
 
-- [x] User (clerk_id, email, role)          <!-- accounts -->
-- [x] PlayerProfile                         <!-- players -->
-- [x] Tournament                            <!-- tournaments -->
-- [x] Team                                  <!-- tournaments -->
-- [x] JoinRequest ⚠️ _(cœur du système)_    <!-- requestes -->
-- [x] Match                                 <!-- matches -->
-<!-- - [ ] payments -->
+- [x] User (clerk_id, email, role)        <!-- accounts -->
+- [x] PlayerProfile                       <!-- players -->
+- [x] Tournament                          <!-- tournaments -->
+- [x] Team                                <!-- tournaments -->
+- [x] JoinRequest ⚠️ _(cœur du système)_  <!-- requestes -->
+- [x] Match                               <!-- matches -->
+
 **Faire ensuite :**
+
 - [x] `python manage.py makemigrations`
 - [x] `python manage.py migrate`
 
@@ -35,8 +36,13 @@
 
 📌 **Référence** : Section 4.1 et 4.2, pages 9 à 10
 
-- [ ] Auth via Clerk (middleware JWT)
-- [ ] CRUD du profil joueur
+- [x] Auth via Clerk (middleware JWT)
+- [x] CRUD du profil joueur
+  - [x] GET /api/players/profile/ (récupérer mon profil)
+  - [x] POST /api/players/profile/ (créer mon profil) ✅ **TESTÉ ET FONCTIONNEL**
+  - [x] PUT /api/players/profile/ (mettre à jour complètement)
+  - [x] PATCH /api/players/profile/ (mettre à jour partiellement)
+  - [x] DELETE /api/players/profile/ (supprimer)
 - [ ] Dashboard organisateur (statistiques)
 
 ---
