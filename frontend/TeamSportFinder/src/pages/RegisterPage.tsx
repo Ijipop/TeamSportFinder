@@ -1,11 +1,33 @@
-// frontend/TeamSportFinder/src/pages/RegisterPage.tsx
-import { SignUp } from '@clerk/clerk-react';
+import { SignUp, useUser } from '@clerk/clerk-react';
 import { Box, Container, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Typography } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const RegisterPage: React.FC = () => {
 	const [role, setRole] = useState<'player' | 'organizer'>('player');
+	const { user: clerkUser } = useUser();
 
+	// Stocker le rôle dans sessionStorage pour le récupérer après la validation email
+	useEffect(() => {
+		sessionStorage.setItem('pendingRole', role);
+	}, [role]);
+
+	// Si l'utilisateur est déjà connecté avec Clerk, mettre à jour les métadonnées
+	useEffect(() => {
+		const updateMetadata = async () => {
+			if (clerkUser && role) {
+				try {
+					await clerkUser.update({
+						unsafeMetadata: {
+							role: role
+						}
+					});
+				} catch (error) {
+					console.error("Erreur lors de la mise à jour des métadonnées:", error);
+				}
+			}
+		};
+		updateMetadata();
+	}, [clerkUser, role]);
 
 	return (
 		<Container
@@ -43,11 +65,6 @@ const RegisterPage: React.FC = () => {
 					routing="path"
 					path="/register"
 					signInUrl="/login"
-					appearance={{
-						elements: {
-							rootBox: "mx-auto"
-						}
-					}}
 					afterSignUpUrl={`/register/complete?role=${role}`}
 				/>
 			</Box>

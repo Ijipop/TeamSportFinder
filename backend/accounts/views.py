@@ -14,7 +14,6 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]  # ✔ protège l'accès
 
-
 @api_view(['GET'])
 @permission_classes([IsClerkAuthenticated])
 def get_current_user(request):
@@ -75,9 +74,18 @@ def create_user_from_clerk(request):
         # Récupérer le nom depuis les métadonnées Clerk ou le body
         full_name = request.data.get('full_name') or request.data.get('name')
         
-        # Récupérer le rôle depuis le body de la requête (priorité) ou depuis le token
+        # Récupérer le rôle depuis le body de la requête (OBLIGATOIRE)
         role_from_body = request.data.get('role')
-        final_role = role_from_body if role_from_body in ['player', 'organizer'] else clerk_role_from_token
+        
+        # Si aucun rôle n'est fourni dans le body, NE PAS utiliser le rôle du token
+        # L'utilisateur doit choisir son rôle explicitement
+        if not role_from_body or role_from_body not in ['player', 'organizer']:
+            return Response(
+                {'error': 'Le rôle est obligatoire. Veuillez choisir un rôle (player ou organizer).'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        final_role = role_from_body
         
         # Créer l'utilisateur
         user = get_or_create_user_from_clerk(
