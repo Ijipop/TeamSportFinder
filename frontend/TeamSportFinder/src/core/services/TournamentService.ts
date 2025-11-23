@@ -277,6 +277,62 @@ export const getTeams = async (token: string | null, tournamentId?: string): Pro
 };
 
 /**
+ * Recherche des équipes disponibles (pour les joueurs)
+ * @param searchTerm - Terme de recherche (nom de l'équipe)
+ * @param onlyAvailable - Filtrer uniquement les équipes disponibles
+ * @param tournamentId - Optionnel: filtrer par tournoi
+ * @param token - Token JWT Clerk
+ */
+export const searchTeams = async (
+	searchTerm?: string,
+	onlyAvailable: boolean = true,
+	tournamentId?: string,
+	token: string | null = null
+): Promise<Team[]> => {
+	try {
+		const headers = createAuthHeaders(token);
+		let url = `${API_BASE_URL}/api/teams/search/`;
+		const params = new URLSearchParams();
+		
+		if (onlyAvailable) {
+			params.append('available', 'true');
+		}
+		if (tournamentId) {
+			params.append('tournament_id', tournamentId);
+		}
+		if (searchTerm) {
+			params.append('search', searchTerm);
+		}
+		
+		if (params.toString()) {
+			url += `?${params.toString()}`;
+		}
+		
+		const response = await fetch(url, {
+			method: 'GET',
+			headers,
+		});
+
+		if (!response.ok) {
+			throw new Error(`Erreur HTTP: ${response.status}`);
+		}
+
+		const data = await response.json();
+		if (!Array.isArray(data)) {
+			if (data && typeof data === 'object' && 'results' in data && Array.isArray(data.results)) {
+				return data.results;
+			}
+			return [];
+		}
+		
+		return data;
+	} catch (error) {
+		console.error("Erreur lors de la recherche d'équipes:", error);
+		throw error;
+	}
+};
+
+/**
  * Crée une équipe dans un tournoi (organisateur uniquement)
  * @param teamData - Données de l'équipe
  * @param token - Token JWT Clerk

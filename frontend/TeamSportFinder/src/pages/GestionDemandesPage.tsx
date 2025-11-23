@@ -1,30 +1,28 @@
-import React, { useState, useEffect } from "react";
-import {
-	Container,
-	Typography,
-	Box,
-	Card,
-	CardContent,
-	CardActions,
-	Button,
-	CircularProgress,
-	Alert,
-	Chip,
-	Grid,
-	TextField,
-	Select,
-	MenuItem,
-	FormControl,
-	InputLabel,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-} from "@mui/material";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import {
-	getReceivedRequests,
+	Alert,
+	Box,
+	Button,
+	Card,
+	CardActions,
+	CardContent,
+	Chip,
+	CircularProgress,
+	Container,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	FormControl,
+	InputLabel,
+	MenuItem,
+	Select,
+	Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import {
 	acceptRequest,
+	getReceivedRequests,
 	rejectRequest,
 	type JoinRequest
 } from "../core/services/JoinRequestService";
@@ -209,80 +207,78 @@ const GestionDemandesPage: React.FC = () => {
 						: "Aucune demande pour cette équipe."}
 				</Alert>
 			) : (
-				<Grid container spacing={3}>
+				<Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
 					{Array.isArray(filteredRequests) && filteredRequests.map((request) => (
-						<Grid item xs={12} key={request.id}>
-							<Card>
-								<CardContent>
-									<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
-										<Box sx={{ flex: 1 }}>
-											<Typography variant="h6" component="h2" gutterBottom>
-												👤 {request.player.full_name}
-											</Typography>
-											<Typography variant="body2" color="text.secondary" gutterBottom>
-												📧 {request.player.email}
-											</Typography>
-											<Typography variant="body2" color="text.secondary" gutterBottom>
-												🏆 Équipe: {request.team.name} - {request.tournament.name} ({request.tournament.sport})
-											</Typography>
-										</Box>
-										{getStatusBadge(request.status)}
+						<Card key={request.id}>
+							<CardContent>
+								<Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 2 }}>
+									<Box sx={{ flex: 1 }}>
+										<Typography variant="h6" component="h2" gutterBottom>
+											👤 {request.player.full_name}
+										</Typography>
+										<Typography variant="body2" color="text.secondary" gutterBottom>
+											📧 {request.player.email}
+										</Typography>
+										<Typography variant="body2" color="text.secondary" gutterBottom>
+											🏆 Équipe: {request.team.name} - {request.tournament.name} ({request.tournament.sport})
+										</Typography>
 									</Box>
+									{getStatusBadge(request.status)}
+								</Box>
 
-									{request.message && (
-										<Box sx={{ mb: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
-											<Typography variant="body2" sx={{ fontStyle: 'italic' }}>
-												💬 "{request.message}"
-											</Typography>
-										</Box>
-									)}
+								{request.message && (
+									<Box sx={{ mb: 2, p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+										<Typography variant="body2" sx={{ fontStyle: 'italic' }}>
+											💬 "{request.message}"
+										</Typography>
+									</Box>
+								)}
 
-									<Typography variant="body2" color="text.secondary">
-										📅 Demandée le: {formatDate(request.created_at)}
-									</Typography>
-								</CardContent>
+								<Typography variant="body2" color="text.secondary">
+									📅 Demandée le: {formatDate(request.created_at)}
+								</Typography>
+							</CardContent>
 
-								<CardActions>
-									<Button
-										size="small"
-										onClick={() => handleViewDetails(request)}
-									>
-										Voir détails
-									</Button>
-									{request.status === 'pending' && (
-										<>
-											<Button
-												size="small"
-												color="success"
-												variant="contained"
-												onClick={() => handleAccept(request.id)}
-												disabled={processingId === request.id}
-											>
-												{processingId === request.id ? (
-													<>
-														<CircularProgress size={16} sx={{ mr: 1 }} />
-														Traitement...
-													</>
-												) : (
-													'Accepter'
-												)}
-											</Button>
-											<Button
-												size="small"
-												color="error"
-												variant="outlined"
-												onClick={() => handleReject(request.id)}
-												disabled={processingId === request.id}
-											>
-												Refuser
-											</Button>
-										</>
-									)}
-								</CardActions>
-							</Card>
-						</Grid>
+							<CardActions>
+								<Button
+									size="small"
+									onClick={() => handleViewDetails(request)}
+								>
+									Voir détails
+								</Button>
+								{request.status === 'pending' && (
+									<>
+										<Button
+											size="small"
+											color="success"
+											variant="contained"
+											onClick={() => handleAccept(request.id)}
+											disabled={processingId === request.id}
+										>
+											{processingId === request.id ? (
+												<>
+													<CircularProgress size={16} sx={{ mr: 1 }} />
+													Traitement...
+												</>
+											) : (
+												'Accepter'
+											)}
+										</Button>
+										<Button
+											size="small"
+											color="error"
+											variant="outlined"
+											onClick={() => handleReject(request.id)}
+											disabled={processingId === request.id}
+										>
+											Refuser
+										</Button>
+									</>
+								)}
+							</CardActions>
+						</Card>
 					))}
-				</Grid>
+				</Box>
 			)}
 
 			{/* Dialog détails */}
