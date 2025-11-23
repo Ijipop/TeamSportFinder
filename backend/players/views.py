@@ -137,3 +137,36 @@ class PlayerProfileViewSet(viewsets.ModelViewSet):
         profile = self.get_object()
         profile.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# organizers/views.py
+
+from rest_framework.views import APIView
+from accounts.permissions import IsOrganizer
+from tournaments.models import Tournament, Team
+from requestes.models import JoinRequest
+
+class OrganizerDashboardView(APIView):
+    permission_classes = [IsAuthenticated, IsOrganizer]
+
+    def get(self, request):
+        user = request.user
+        tournaments = Tournament.objects.filter(organizer=user)
+        teams = Team.objects.filter(tournament__organizer=user)
+        pending_requests = JoinRequest.objects.filter(team__tournament__organizer=user, status='pending')
+
+        return Response({
+            "nb_tournaments": tournaments.count(),
+            "nb_teams": teams.count(),
+            "pending_requests": pending_requests.count(),
+            "tournaments": [
+                {
+                    "id": str(t.id),
+                    "name": t.name,
+                    "sport": t.sport,
+                    "city": t.city,
+                    "nb_teams": t.teams.count(),
+                }
+                for t in tournaments
+            ]
+        })

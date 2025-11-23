@@ -12,7 +12,7 @@ import { DashboardPlayerPage } from "../pages/DashboardPlayerPage";
 import { DashboardRedirectPage } from "../pages/DashboardRedirectPage";
 import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
-import { ProfilePage } from "../pages/ProfilePage";
+import { ProfilePageRouter } from "../pages/ProfilePage";
 import { RegisterCompletePage } from "../pages/RegisterCompletePage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { SelectRolePage } from "../pages/SelectRolePage";
@@ -387,7 +387,7 @@ export const AppRouter: React.FC = () =>
 								element={
 									<RoleProtectedRoute allowedRoles={['player', 'organizer']}>
 										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
-											<ProfilePage />
+											<ProfilePageRouter />
 										</Layout>
 									</RoleProtectedRoute>
 								}

@@ -59,3 +59,37 @@ class PlayerProfileCreateSerializer(serializers.ModelSerializer):
             )
         return value
 
+
+# organizers/serializers.py
+
+from players.models import OrganizerProfile
+
+class OrganizerProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer pour le profil organisateur
+    """
+    user_id = serializers.UUIDField(source='user.id', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+    full_name = serializers.CharField(source='user.full_name', read_only=True)
+    role = serializers.CharField(source='user.role', read_only=True)
+
+    class Meta:
+        model = OrganizerProfile
+        fields = [
+            'id',
+            'user_id',
+            'email',
+            'full_name',
+            'role',
+            'organization_name',
+            'bio',
+        ]
+        read_only_fields = ['id']
+
+class OrganizerProfileCreateSerializer(serializers.ModelSerializer):
+    """
+    Serializer pour créer un profil organisateur
+    """
+    class Meta:
+        model = OrganizerProfile
+        fields = ['organization_name', 'bio']

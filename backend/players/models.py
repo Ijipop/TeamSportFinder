@@ -18,3 +18,16 @@ class PlayerProfile(models.Model):
         db_table = 'player_profiles'
         verbose_name = "player"
         verbose_name_plural = "players"
+
+class OrganizerProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    organization_name = models.CharField(max_length=100, blank=True)
+    bio = models.TextField(blank=True)
+
+    class Meta:
+        db_table = 'organizer_profiles'
+        verbose_name = "organizer"
+        verbose_name_plural = "organizers"
+
+    def __str__(self):
+        return f"{self.user.full_name} - Organisateur"

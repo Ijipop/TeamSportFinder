@@ -2,6 +2,7 @@
 
 from django.shortcuts import render
 from accounts.models import User
+from players.models import PlayerProfile, OrganizerProfile
 from accounts.serializers import UserSerializer
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes
@@ -101,6 +102,25 @@ def create_user_from_clerk(request):
         if user.role != final_role:
             user.role = final_role
             user.save()
+
+        if final_role == 'player':
+            if not PlayerProfile.objects.filter(user=user).exists():
+                PlayerProfile.objects.create(
+                    user=user,
+                    city="",  # valeurs par défaut
+                    favorite_sport="",
+                    level="beginner",
+                    position=""
+                )
+        
+        if final_role == 'organizer':
+            if not OrganizerProfile.objects.filter(user=user).exists():
+                OrganizerProfile.objects.create(
+                    user=user,
+                    organization_name="",
+                    bio=""
+                )
+
         
         serializer = UserSerializer(user)
         # Log pour déboguer
