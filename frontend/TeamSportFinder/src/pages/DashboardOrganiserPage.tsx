@@ -17,6 +17,7 @@ import {
 	TextField,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import MailIcon from "@mui/icons-material/Mail";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { getMyTournaments, createTournament, type Tournament } from "../core/services/TournamentService";
@@ -117,13 +118,21 @@ const DashboardOrganiserPage: React.FC = () => {
 						Gérez vos tournois et équipes
 					</Typography>
 				</Box>
-				<Box sx={{ display: "flex", gap: 2 }}>
+				<Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
 					<Button
 						variant="contained"
 						startIcon={<AddIcon />}
 						onClick={() => setCreateDialogOpen(true)}
 					>
 						Créer un tournoi
+					</Button>
+					<Button
+						variant="contained"
+						color="secondary"
+						startIcon={<MailIcon />}
+						onClick={() => navigate("/organizer/requests")}
+					>
+						Gérer les demandes
 					</Button>
 					<Button
 						variant="outlined"
