@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MailIcon from "@mui/icons-material/Mail";
+import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { getMyTournaments, createTournament, type Tournament } from "../core/services/TournamentService";
@@ -154,6 +155,14 @@ const DashboardOrganiserPage: React.FC = () =>
 						onClick={() => navigate("/organizer/requests")}
 					>
 						Gérer les demandes
+					</Button>
+					<Button
+						variant="contained"
+						color="success"
+						startIcon={<SportsSoccerIcon />}
+						onClick={() => navigate("/organizer/matches")}
+					>
+						Gérer les matchs
 					</Button>
 					<Button
 						variant="outlined"
