@@ -3,7 +3,7 @@ import { Container, Typography, Button } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const OrganizerProfilePage: React.FC = () => {
+const ProfileOrganizerPage: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -23,4 +23,4 @@ const OrganizerProfilePage: React.FC = () => {
   );
 };
 
-export { OrganizerProfilePage };
+export { ProfileOrganizerPage };

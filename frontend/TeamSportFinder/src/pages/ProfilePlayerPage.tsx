@@ -3,7 +3,7 @@ import { Container, Typography, Button } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-const PlayerProfilePage: React.FC = () => {
+const ProfilePlayerPage: React.FC = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
 
@@ -23,7 +23,7 @@ const PlayerProfilePage: React.FC = () => {
   );
 };
 
-export { PlayerProfilePage };
+export { ProfilePlayerPage };
 
 // import React, { useState, useEffect } from "react";
 // import {
