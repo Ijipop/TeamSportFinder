@@ -16,6 +16,8 @@ import { ProfilePage } from "../pages/ProfilePage";
 import { RegisterCompletePage } from "../pages/RegisterCompletePage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { SelectRolePage } from "../pages/SelectRolePage";
+import { GestionEquipeOrganiser } from "../pages/GestionEquipeOrganiser";
+import { GestionEquipePlayer } from "../pages/GestionEquipePlayer";
 
 import { ConditionOfUsePage } from "../pages/ConditionOfUsePage";
 import { CookiesPolicyPage } from "../pages/CookiesPolicyPage";
@@ -351,6 +353,26 @@ export const AppRouter: React.FC = () =>
 									<RoleProtectedRoute allowedRoles={['organizer']}>
 										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
 											<DashboardOrganiserPage />
+										</Layout>
+									</RoleProtectedRoute>
+								}
+							/>
+							<Route
+								path="/gestion-equipe-organiser"
+								element={
+									<RoleProtectedRoute allowedRoles={['organizer']}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<GestionEquipeOrganiser />
+										</Layout>
+									</RoleProtectedRoute>
+								}
+							/>
+							<Route
+								path="/gestion-equipe-player"
+								element={
+									<RoleProtectedRoute allowedRoles={['player']}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<GestionEquipePlayer />
 										</Layout>
 									</RoleProtectedRoute>
 								}
