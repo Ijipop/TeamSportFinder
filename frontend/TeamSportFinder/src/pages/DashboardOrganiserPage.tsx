@@ -1,27 +1,24 @@
-import { useAuth as useClerkAuth } from "@clerk/clerk-react";
-import AddIcon from "@mui/icons-material/Add";
-import MailIcon from "@mui/icons-material/Mail";
-import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import React, { useState, useEffect } from "react";
 import {
-	Alert,
-	Box,
-	Button,
-	Card,
-	CardActions,
-	CardContent,
-	Chip,
-	CircularProgress,
 	Container,
+	Typography,
+	Box,
+	Card,
+	CardContent,
+	CardActions,
+	Button,
+	CircularProgress,
+	Alert,
+	Chip,
 	Dialog,
-	DialogActions,
-	DialogContent,
 	DialogTitle,
+	DialogContent,
+	DialogActions,
+	TextField,
+	Select,
+	MenuItem,
 	FormControl,
 	InputLabel,
-	MenuItem,
-	Select,
-	TextField,
-	Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MailIcon from "@mui/icons-material/Mail";
@@ -33,7 +30,7 @@ import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { getMyTournaments, createTournament, getTeams, type Tournament, type Team } from "../core/services/TournamentService";
-import { getReceivedRequests, type JoinRequest } from "../core/services/JoinRequestService";
+import { getReceivedRequests, acceptRequest, rejectRequest, type JoinRequest } from "../core/services/JoinRequestService";
 
 const DashboardOrganiserPage: React.FC = () =>
 {
@@ -44,11 +41,11 @@ const DashboardOrganiserPage: React.FC = () =>
 	const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [statsLoading, setStatsLoading] = useState(true);
-	const [statsLoading, setStatsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
 	const [createDialogOpen, setCreateDialogOpen] = useState(false);
 	const [creating, setCreating] = useState(false);
+	const [processingRequestId, setProcessingRequestId] = useState<string | null>(null);
 	const [tournamentForm, setTournamentForm] = useState({
 		name: "",
 		sport: "",
@@ -66,7 +63,6 @@ const DashboardOrganiserPage: React.FC = () =>
 
 	useEffect(() => {
 		loadMyTournaments();
-		loadStatistics();
 		loadStatistics();
 	}, []);
 
@@ -169,6 +165,54 @@ const DashboardOrganiserPage: React.FC = () =>
 			month: 'long',
 			day: 'numeric'
 		});
+	};
+
+	const formatDateTime = (dateString: string) => {
+		const date = new Date(dateString);
+		return date.toLocaleDateString('fr-FR', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
+		});
+	};
+
+	const handleAcceptRequest = async (requestId: string) => {
+		setProcessingRequestId(requestId);
+		setError(null);
+		try {
+			const token = await getToken();
+			await acceptRequest(requestId, token);
+			setSuccess("Demande acceptée avec succès !");
+			await loadStatistics();
+		} catch (err: any) {
+			setError(err.message || "Erreur lors de l'acceptation de la demande");
+		} finally {
+			setProcessingRequestId(null);
+		}
+	};
+
+	const handleRejectRequest = async (requestId: string) => {
+		if (!window.confirm("Êtes-vous sûr de vouloir refuser cette demande ?")) {
+			return;
+		}
+		setProcessingRequestId(requestId);
+		setError(null);
+		try {
+			const token = await getToken();
+			await rejectRequest(requestId, token);
+			setSuccess("Demande refusée");
+			await loadStatistics();
+		} catch (err: any) {
+			setError(err.message || "Erreur lors du refus de la demande");
+		} finally {
+			setProcessingRequestId(null);
+		}
+	};
+
+	const getPendingRequests = () => {
+		return joinRequests.filter(req => req.status === 'pending').slice(0, 5); // Limiter à 5 pour l'affichage
 	};
 
 	const handleCreateTournament = async () =>
@@ -355,6 +399,76 @@ const DashboardOrganiserPage: React.FC = () =>
 					</CardContent>
 				</Card>
 			</Box>
+
+			{/* Section des demandes d'adhésion en attente */}
+			{getPendingRequests().length > 0 && (
+				<Box sx={{ mb: 4 }}>
+					<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+						<Typography variant="h5" gutterBottom>
+							📬 Demandes d'adhésion en attente ({getPendingRequests().length})
+						</Typography>
+						<Button
+							variant="outlined"
+							startIcon={<MailIcon />}
+							onClick={() => navigate("/organizer/requests")}
+						>
+							Voir toutes les demandes
+						</Button>
+					</Box>
+					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+						{getPendingRequests().map((request) => (
+							<Card key={request.id} sx={{ borderLeft: 4, borderColor: 'warning.main' }}>
+								<CardContent>
+									<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+										<Box sx={{ flex: 1 }}>
+											<Typography variant="h6" component="h2" gutterBottom>
+												👤 {request.player.full_name}
+											</Typography>
+											<Typography variant="body2" color="text.secondary" gutterBottom>
+												📧 {request.player.email}
+											</Typography>
+											<Typography variant="body2" color="text.secondary" gutterBottom>
+												🏆 Équipe: <strong>{request.team.name}</strong> - {request.tournament.name} ({request.tournament.sport})
+											</Typography>
+											{request.message && (
+												<Box sx={{ mt: 1, p: 1.5, bgcolor: 'background.default', borderRadius: 1 }}>
+													<Typography variant="body2" sx={{ fontStyle: 'italic', color: 'text.secondary' }}>
+														💬 "{request.message}"
+													</Typography>
+												</Box>
+											)}
+											<Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+												📅 Demandée le: {formatDateTime(request.created_at)}
+											</Typography>
+										</Box>
+										<Chip label="En attente" color="warning" size="small" sx={{ ml: 2 }} />
+									</Box>
+									<CardActions>
+										<Button
+											size="small"
+											variant="contained"
+											color="success"
+											onClick={() => handleAcceptRequest(request.id)}
+											disabled={processingRequestId === request.id}
+										>
+											{processingRequestId === request.id ? <CircularProgress size={16} /> : "✓ Accepter"}
+										</Button>
+										<Button
+											size="small"
+											variant="outlined"
+											color="error"
+											onClick={() => handleRejectRequest(request.id)}
+											disabled={processingRequestId === request.id}
+										>
+											✗ Refuser
+										</Button>
+									</CardActions>
+								</CardContent>
+							</Card>
+						))}
+					</Box>
+				</Box>
+			)}
 
 			<Typography variant="h5" gutterBottom sx={{ mt: 3, mb: 2 }}>
 				Mes tournois ({tournaments.length})
