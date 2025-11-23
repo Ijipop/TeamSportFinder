@@ -29,6 +29,8 @@ import { TournamentsPage } from "../pages/TournamentsPage";
 import { MesDemandesPage } from "../pages/MesDemandesPage";
 import { GestionDemandesPage } from "../pages/GestionDemandesPage";
 import { RechercheEquipesPage } from "../pages/RechercheEquipesPage";
+import { MesMatchsPage } from "../pages/MesMatchsPage";
+import { GestionMatchsPage } from "../pages/GestionMatchsPage";
 
 
 // Composant pour les routes protégées avec vérification de profil complet
@@ -421,6 +423,16 @@ export const AppRouter: React.FC = () =>
 									</RoleProtectedRoute>
 								}
 							/>
+							<Route
+								path="/my-matches"
+								element={
+									<RoleProtectedRoute allowedRoles={['player']}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<MesMatchsPage />
+										</Layout>
+									</RoleProtectedRoute>
+								}
+							/>
 							{/* Pages organisateur */}
 							<Route
 								path="/organizer/requests"
@@ -428,6 +440,16 @@ export const AppRouter: React.FC = () =>
 									<RoleProtectedRoute allowedRoles={['organizer']}>
 										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
 											<GestionDemandesPage />
+										</Layout>
+									</RoleProtectedRoute>
+								}
+							/>
+							<Route
+								path="/organizer/matches"
+								element={
+									<RoleProtectedRoute allowedRoles={['organizer']}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<GestionMatchsPage />
 										</Layout>
 									</RoleProtectedRoute>
 								}
