@@ -57,12 +57,7 @@ INSTALLED_APPS = [
     'players',
     'requestes',
     'tournaments',
-    # 'accountsConfig.apps.AccountsConfig',
-    # 'matches.apps.MatchesConfig',
-    # 'payments.apps.PaymentsConfig',
-    # 'players.apps.PlayersConfig',
-    # 'requestes.apps.RequestesConfig',
-    # 'tournaments.apps.TournamentsConfig',
+    'api',
 ]
 
 MIDDLEWARE = [

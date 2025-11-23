@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from accounts.models import User
-from players.models import PlayerProfile
+from accounts.models import User#, PlayerProfile
 from tournaments.models import Tournament, Team
 from requestes.models import JoinRequest
 from matches.models import Match

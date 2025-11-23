@@ -7,4 +7,6 @@ urlpatterns = [
     path('api/accounts/', include('accounts.urls')),
     path('api/', include('tournaments.urls')),   # pour tournois + équipes
     path('api/', include('requestes.urls')),      # pour demandes d’adhésion
+    path("api/", include("api.urls")),
+
 ]

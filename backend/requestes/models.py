@@ -16,6 +16,7 @@ class JoinRequest(models.Model):
     player = models.ForeignKey(User, on_delete=models.CASCADE, related_name='join_requests_as_player')    # join_requests or 'requestes'?
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='join_requests_as_team')      # autre nom pour eviter memes noms
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    # message = models.TextField(blank=True, null=True) # alt?
     message = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1,15 +1,16 @@
 import uuid
 from django.db import models
 
-from tournaments.models import Team
+from tournaments.models import Team #, Tournament link to a tournament maybe?
 
 class Match(models.Model):
 # """Match entre deux equipes"""
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    # tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE, related_name="matches")
     team_a = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='matches_as_team_a')
     team_b = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='matches_as_team_b')
     date = models.DateTimeField ()
-    location = models.CharField(max_length =200)
+    location = models.CharField(max_length=200)
     score_a = models.IntegerField(null=True, blank=True)
     score_b = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -18,3 +19,7 @@ class Match(models.Model):
         db_table = 'matches'
         verbose_name = "match"
         verbose_name_plural = "matches"
+    
+    def __str__(self):
+        # return f"{self.team_a} vs {self.team_b} ({self.tournament.name})"
+        return f"{self.team_a} vs {self.team_b})"
