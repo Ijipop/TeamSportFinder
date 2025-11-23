@@ -60,8 +60,9 @@ export const createJoinRequest = async (
 	try {
 		const headers = createAuthHeaders(token);
 		const body: any = { team_id: teamId };
-		if (message) {
-			body.message = message;
+		// Ne pas envoyer le message s'il est vide ou undefined
+		if (message && message.trim()) {
+			body.message = message.trim();
 		}
 
 		const response = await fetch(`${API_BASE_URL}/api/join-requests/`, {
@@ -72,7 +73,32 @@ export const createJoinRequest = async (
 
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({}));
-			throw new Error(errorData.error || errorData.detail || `Erreur HTTP: ${response.status}`);
+			// Améliorer l'affichage des erreurs de validation
+			let errorMessage = `Erreur HTTP: ${response.status}`;
+			
+			if (errorData.detail) {
+				errorMessage = errorData.detail;
+			} else if (errorData.error) {
+				errorMessage = errorData.error;
+			} else if (errorData.team_id) {
+				// Erreur de validation sur team_id
+				errorMessage = Array.isArray(errorData.team_id) 
+					? errorData.team_id[0] 
+					: errorData.team_id;
+			} else if (errorData.message) {
+				// Erreur de validation sur message
+				errorMessage = Array.isArray(errorData.message) 
+					? errorData.message[0] 
+					: errorData.message;
+			} else if (typeof errorData === 'object' && Object.keys(errorData).length > 0) {
+				// Afficher la première erreur trouvée
+				const firstKey = Object.keys(errorData)[0];
+				const firstError = errorData[firstKey];
+				errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+			}
+			
+			console.error("Détails de l'erreur API:", errorData);
+			throw new Error(errorMessage);
 		}
 
 		return await response.json();

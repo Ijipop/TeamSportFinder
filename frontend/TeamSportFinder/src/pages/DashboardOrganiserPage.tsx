@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from "react";
+import { useAuth as useClerkAuth } from "@clerk/clerk-react";
+import AddIcon from "@mui/icons-material/Add";
+import MailIcon from "@mui/icons-material/Mail";
+import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
 import {
-	Container,
-	Typography,
-	Box,
-	Card,
-	CardContent,
-	CardActions,
-	Button,
-	CircularProgress,
 	Alert,
+	Box,
+	Button,
+	Card,
+	CardActions,
+	CardContent,
 	Chip,
+	CircularProgress,
+	Container,
 	Dialog,
-	DialogTitle,
-	DialogContent,
 	DialogActions,
-	TextField,
-	Select,
-	MenuItem,
+	DialogContent,
+	DialogTitle,
 	FormControl,
 	InputLabel,
+	MenuItem,
+	Select,
+	TextField,
+	Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MailIcon from "@mui/icons-material/Mail";
@@ -41,6 +44,7 @@ const DashboardOrganiserPage: React.FC = () =>
 	const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [statsLoading, setStatsLoading] = useState(true);
+	const [statsLoading, setStatsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
 	const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -62,6 +66,7 @@ const DashboardOrganiserPage: React.FC = () =>
 
 	useEffect(() => {
 		loadMyTournaments();
+		loadStatistics();
 		loadStatistics();
 	}, []);
 
@@ -517,3 +522,4 @@ const DashboardOrganiserPage: React.FC = () =>
 };
 
 export { DashboardOrganiserPage };
+
