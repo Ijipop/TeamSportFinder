@@ -23,16 +23,24 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import MailIcon from "@mui/icons-material/Mail";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import GroupsIcon from "@mui/icons-material/Groups";
+import PeopleIcon from "@mui/icons-material/People";
+import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
-import { getMyTournaments, createTournament, type Tournament } from "../core/services/TournamentService";
+import { getMyTournaments, createTournament, getTeams, type Tournament, type Team } from "../core/services/TournamentService";
+import { getReceivedRequests, type JoinRequest } from "../core/services/JoinRequestService";
 
 const DashboardOrganiserPage: React.FC = () =>
 {
 	const { getToken } = useClerkAuth();
 	const navigate = useNavigate();
 	const [tournaments, setTournaments] = useState<Tournament[]>([]);
+	const [teams, setTeams] = useState<Team[]>([]);
+	const [joinRequests, setJoinRequests] = useState<JoinRequest[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [statsLoading, setStatsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
 	const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -44,9 +52,23 @@ const DashboardOrganiserPage: React.FC = () =>
 		start_date: "",
 	});
 
+	// Statistiques
+	const [stats, setStats] = useState({
+		totalTournaments: 0,
+		totalTeams: 0,
+		totalPlayers: 0,
+		pendingRequests: 0,
+	});
+
 	useEffect(() => {
 		loadMyTournaments();
+		loadStatistics();
 	}, []);
+
+	useEffect(() => {
+		// Recalculer les stats quand les données changent
+		calculateStats();
+	}, [tournaments, teams, joinRequests]);
 
 	const loadMyTournaments = async () =>
 	{
@@ -78,6 +100,59 @@ const DashboardOrganiserPage: React.FC = () =>
 		{
 			setLoading(false);
 		}
+	};
+
+	const loadStatistics = async () => {
+		setStatsLoading(true);
+		try {
+			const token = await getToken();
+			
+			// Charger toutes les données en parallèle
+			const [tournamentsData, teamsData, requestsData] = await Promise.all([
+				getMyTournaments(token).catch(() => []),
+				getTeams(token).catch(() => []),
+				getReceivedRequests(token).catch(() => []),
+			]);
+
+			if (Array.isArray(tournamentsData)) {
+				setTournaments(tournamentsData);
+			}
+			if (Array.isArray(teamsData)) {
+				// Filtrer pour ne garder que les équipes de mes tournois
+				const tournamentIds = Array.isArray(tournamentsData) 
+					? tournamentsData.map(t => t.id) 
+					: [];
+				const myTeams = teamsData.filter((team: Team) => 
+					team.tournament_id && tournamentIds.includes(team.tournament_id)
+				);
+				setTeams(myTeams);
+			}
+			if (Array.isArray(requestsData)) {
+				setJoinRequests(requestsData);
+			}
+		} catch (err: any) {
+			console.error("Erreur lors du chargement des statistiques:", err);
+		} finally {
+			setStatsLoading(false);
+		}
+	};
+
+	const calculateStats = () => {
+		const totalTournaments = tournaments.length;
+		const totalTeams = teams.length;
+		
+		// Calculer le nombre total de joueurs dans toutes les équipes
+		const totalPlayers = teams.reduce((sum, team) => sum + (team.current_capacity || 0), 0);
+		
+		// Compter les demandes en attente
+		const pendingRequests = joinRequests.filter(req => req.status === 'pending').length;
+
+		setStats({
+			totalTournaments,
+			totalTeams,
+			totalPlayers,
+			pendingRequests,
+		});
 	};
 
 	const formatDate = (dateString: string) =>
@@ -112,8 +187,11 @@ const DashboardOrganiserPage: React.FC = () =>
 			setSuccess(`Tournoi "${newTournament.name}" créé avec succès !`);
 			setCreateDialogOpen(false);
 			setTournamentForm({ name: "", sport: "", city: "", start_date: "" });
-			// Recharger la liste des tournois
-			await loadMyTournaments();
+			// Recharger la liste des tournois et les statistiques
+			await Promise.all([
+				loadMyTournaments(),
+				loadStatistics()
+			]);
 		}
 		catch (err: any)
 		{
@@ -194,6 +272,84 @@ const DashboardOrganiserPage: React.FC = () =>
 					{success}
 				</Alert>
 			)}
+
+			{/* Cartes de statistiques */}
+			<Box
+				sx={{
+					display: 'grid',
+					gridTemplateColumns: {
+						xs: '1fr',
+						sm: 'repeat(2, 1fr)',
+						md: 'repeat(4, 1fr)',
+					},
+					gap: 3,
+					mb: 4,
+				}}
+			>
+				<Card sx={{ bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+					<CardContent>
+						<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+							<Box>
+								<Typography variant="h4" component="div" fontWeight="bold">
+									{statsLoading ? '...' : stats.totalTournaments}
+								</Typography>
+								<Typography variant="body2" sx={{ opacity: 0.9 }}>
+									Tournois
+								</Typography>
+							</Box>
+							<EmojiEventsIcon sx={{ fontSize: 48, opacity: 0.8 }} />
+						</Box>
+					</CardContent>
+				</Card>
+
+				<Card sx={{ bgcolor: 'secondary.main', color: 'secondary.contrastText' }}>
+					<CardContent>
+						<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+							<Box>
+								<Typography variant="h4" component="div" fontWeight="bold">
+									{statsLoading ? '...' : stats.totalTeams}
+								</Typography>
+								<Typography variant="body2" sx={{ opacity: 0.9 }}>
+									Équipes
+								</Typography>
+							</Box>
+							<GroupsIcon sx={{ fontSize: 48, opacity: 0.8 }} />
+						</Box>
+					</CardContent>
+				</Card>
+
+				<Card sx={{ bgcolor: 'success.main', color: 'success.contrastText' }}>
+					<CardContent>
+						<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+							<Box>
+								<Typography variant="h4" component="div" fontWeight="bold">
+									{statsLoading ? '...' : stats.totalPlayers}
+								</Typography>
+								<Typography variant="body2" sx={{ opacity: 0.9 }}>
+									Joueurs
+								</Typography>
+							</Box>
+							<PeopleIcon sx={{ fontSize: 48, opacity: 0.8 }} />
+						</Box>
+					</CardContent>
+				</Card>
+
+				<Card sx={{ bgcolor: 'warning.main', color: 'warning.contrastText' }}>
+					<CardContent>
+						<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+							<Box>
+								<Typography variant="h4" component="div" fontWeight="bold">
+									{statsLoading ? '...' : stats.pendingRequests}
+								</Typography>
+								<Typography variant="body2" sx={{ opacity: 0.9 }}>
+									Demandes en attente
+								</Typography>
+							</Box>
+							<PendingActionsIcon sx={{ fontSize: 48, opacity: 0.8 }} />
+						</Box>
+					</CardContent>
+				</Card>
+			</Box>
 
 			<Typography variant="h5" gutterBottom sx={{ mt: 3, mb: 2 }}>
 				Mes tournois ({tournaments.length})
