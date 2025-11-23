@@ -1,8 +1,11 @@
 import React from "react";
-import { Container, Typography } from "@mui/material";
+import { Container, Typography, Button } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const DashboardPlayerPage: React.FC = () =>
 {
+	const navigate = useNavigate();
+	
 	return (
 		<Container
 			maxWidth="lg"
@@ -12,6 +15,7 @@ const DashboardPlayerPage: React.FC = () =>
 			}}
 		>
 			<Typography variant="h1">Dashboard Joueur</Typography>
+			<Button variant="contained" color="primary" onClick={() => navigate("/gestion-equipe-player")}>Gestion des équipes</Button>
 		</Container>
 	);
 };

@@ -2,19 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
 	Container,
 	Typography,
-	Box,
-	Card,
-	CardContent,
-	CardActions,
 	Button,
-	CircularProgress,
-	Alert,
-	Chip,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	TextField,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MailIcon from "@mui/icons-material/Mail";
@@ -22,7 +10,8 @@ import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { getMyTournaments, createTournament, type Tournament } from "../core/services/TournamentService";
 
-const DashboardOrganiserPage: React.FC = () => {
+const DashboardOrganiserPage: React.FC = () =>
+{
 	const { getToken } = useClerkAuth();
 	const navigate = useNavigate();
 	const [tournaments, setTournaments] = useState<Tournament[]>([]);
@@ -42,41 +31,56 @@ const DashboardOrganiserPage: React.FC = () => {
 		loadMyTournaments();
 	}, []);
 
-	const loadMyTournaments = async () => {
+	const loadMyTournaments = async () =>
+	{
 		setLoading(true);
 		setError(null);
-		try {
+		
+		try
+		{
 			const token = await getToken();
 			const data = await getMyTournaments(token);
 			// S'assurer que data est un tableau
-			if (Array.isArray(data)) {
+			if (Array.isArray(data))
+			{
 				setTournaments(data);
-			} else {
+			}
+			else
+			{
 				console.warn("Les données reçues ne sont pas un tableau:", data);
 				setTournaments([]);
 			}
-		} catch (err: any) {
+		}
+		catch (err: any)
+		{
 			setError(err.message || "Erreur lors du chargement de vos tournois");
 			console.error("Erreur:", err);
 			setTournaments([]); // S'assurer que tournaments reste un tableau
-		} finally {
+		}
+		finally
+		{
 			setLoading(false);
 		}
 	};
 
-	const formatDate = (dateString: string) => {
+	const formatDate = (dateString: string) =>
+	{
 		const date = new Date(dateString);
-		return date.toLocaleDateString('fr-FR', {
+		return date.toLocaleDateString('fr-FR',
+		{
 			year: 'numeric',
 			month: 'long',
 			day: 'numeric'
 		});
 	};
 
-	const handleCreateTournament = async () => {
+	const handleCreateTournament = async () =>
+	{
 		// Validation
-		if (!tournamentForm.name.trim() || !tournamentForm.sport.trim() || !tournamentForm.city.trim() || !tournamentForm.start_date) {
+		if (!tournamentForm.name.trim() || !tournamentForm.sport.trim() || !tournamentForm.city.trim() || !tournamentForm.start_date)
+		{
 			setError("Veuillez remplir tous les champs");
+			
 			return;
 		}
 
@@ -84,7 +88,8 @@ const DashboardOrganiserPage: React.FC = () => {
 		setError(null);
 		setSuccess(null);
 
-		try {
+		try
+		{
 			const token = await getToken();
 			const newTournament = await createTournament(tournamentForm, token);
 			setSuccess(`Tournoi "${newTournament.name}" créé avec succès !`);
@@ -92,10 +97,14 @@ const DashboardOrganiserPage: React.FC = () => {
 			setTournamentForm({ name: "", sport: "", city: "", start_date: "" });
 			// Recharger la liste des tournois
 			await loadMyTournaments();
-		} catch (err: any) {
+		}
+		catch (err: any)
+		{
 			setError(err.message || "Erreur lors de la création du tournoi");
 			console.error("Erreur:", err);
-		} finally {
+		}
+		finally
+		{
 			setCreating(false);
 		}
 	};
