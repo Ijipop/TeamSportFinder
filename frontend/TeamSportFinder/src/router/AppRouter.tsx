@@ -23,6 +23,7 @@ import { FaqPage } from "../pages/FaqPage";
 import { PrivacyPolicyPage } from "../pages/PrivacyPolicyPage";
 import { SupportPage } from "../pages/SupportPage";
 import { WhoAreWe } from "../pages/WhoAreWePage";
+import { TournamentsPage } from "../pages/TournamentsPage";
 
 
 // Composant pour les routes protégées avec vérification de profil complet
@@ -360,6 +361,16 @@ export const AppRouter: React.FC = () =>
 									<RoleProtectedRoute allowedRoles={['player', 'organizer']}>
 										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
 											<ProfilePage />
+										</Layout>
+									</RoleProtectedRoute>
+								}
+							/>
+							<Route
+								path="/tournaments"
+								element={
+									<RoleProtectedRoute allowedRoles={['player', 'organizer']}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<TournamentsPage />
 										</Layout>
 									</RoleProtectedRoute>
 								}

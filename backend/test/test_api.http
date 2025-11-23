@@ -1,47 +1,215 @@
-### 1. Lister les tournois
-GET http://127.0.0.1:8000/api/tournaments/
+### Tests pour les Endpoints Tournois et Équipes
+### Fichier REST Client pour VS Code / Cursor
+### 
+### ⚠️ IMPORTANT: Vous DEVEZ remplacer YOUR_TOKEN_HERE par votre vrai token JWT Clerk
+### 
+### Comment obtenir votre token JWT Clerk :
+### 1. Démarrez votre frontend React (npm run dev)
+### 2. Connectez-vous via Clerk dans le navigateur
+### 3. Ouvrez la console du navigateur (F12)
+### 4. Tapez: await window.Clerk.session.getToken()
+### 5. Copiez le token retourné (il doit commencer par "eyJ" et avoir 3 parties séparées par des points)
+### 6. Collez-le ci-dessous à la place de YOUR_TOKEN_HERE
+### 
+### Format d'un token JWT valide: header.payload.signature (3 parties séparées par des points)
+### Exemple: eyJhbGciOiJSUzI1NiIs... (très long, plusieurs centaines de caractères)
+
+@baseUrl = http://localhost:8000
+@token = YOUR_TOKEN_HERE
+@tournamentId = REPLACE_WITH_ACTUAL_TOURNAMENT_ID
+@teamId = REPLACE_WITH_ACTUAL_TEAM_ID
+
+### ⚠️ Si vous obtenez l'erreur "Not enough segments", c'est que le token n'est pas valide
+### Vérifiez que vous avez bien remplacé YOUR_TOKEN_HERE par un vrai token JWT
+### 
+### Alternative: Vous pouvez aussi copier le token depuis le fichier players/tests.http
+### si vous avez déjà un token valide là-bas
+
+### ============================================
+### TEST DE CONNEXION (pour vérifier que votre token fonctionne)
+### ============================================
+
+### Test simple: Récupérer mon profil (pour vérifier l'authentification)
+GET {{baseUrl}}/api/players/profile/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
+### ============================================
+### API TOURNOIS
+### ============================================
 
-### 2. Lister les équipes d’un tournoi
-GET http://127.0.0.1:8000/api/tournaments/1/teams/
+### 1. Lister tous les tournois (joueurs et organisateurs)
+GET {{baseUrl}}/api/tournaments/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
-
-### 3. Lister toutes les demandes d’adhésion
-GET http://127.0.0.1:8000/api/joinrequests/
+### 2. Détails d'un tournoi
+GET {{baseUrl}}/api/tournaments/{{tournamentId}}/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
-
-### 4. Créer une nouvelle demande d’adhésion (Charlie → Dragons)
-POST http://127.0.0.1:8000/api/joinrequests/
+### 3. Créer un tournoi (organisateur uniquement)
+POST {{baseUrl}}/api/tournaments/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "player": 3,
-  "team": 1,
-  "message": "Je veux rejoindre Les Dragons"
+  "name": "Tournoi de Football 2024",
+  "sport": "Football",
+  "city": "Paris",
+  "start_date": "2024-06-01"
 }
 
+### 4. Modifier un tournoi (organisateur propriétaire uniquement)
+PUT {{baseUrl}}/api/tournaments/{{tournamentId}}/
+Authorization: Bearer {{token}}
+Content-Type: application/json
 
-### 5. Accepter une demande d’adhésion (ex: JoinRequest id=1)
-PATCH http://127.0.0.1:8000/api/joinrequests/1/
+{
+  "name": "Tournoi de Football 2024 - Modifié",
+  "sport": "Football",
+  "city": "Lyon",
+  "start_date": "2024-06-15"
+}
+
+### 5. Modifier partiellement un tournoi
+PATCH {{baseUrl}}/api/tournaments/{{tournamentId}}/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "city": "Marseille"
+}
+
+### 6. Supprimer un tournoi (organisateur propriétaire uniquement)
+DELETE {{baseUrl}}/api/tournaments/{{tournamentId}}/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 7. Mes tournois (organisateur uniquement)
+GET {{baseUrl}}/api/tournaments/my/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 8. Lister les équipes d'un tournoi
+GET {{baseUrl}}/api/tournaments/{{tournamentId}}/teams/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+
+### ============================================
+### API ÉQUIPES
+### ============================================
+
+### 1. Lister toutes les équipes (avec filtres optionnels)
+GET {{baseUrl}}/api/teams/?tournament_id={{tournamentId}}&available=true&search=dragons
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 2. Lister toutes les équipes (sans filtres)
+GET {{baseUrl}}/api/teams/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 3. Détails d'une équipe
+GET {{baseUrl}}/api/teams/{{teamId}}/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 4. Créer une équipe (organisateur uniquement)
+POST {{baseUrl}}/api/teams/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Les Dragons",
+  "tournament_id": "{{tournamentId}}",
+  "max_capacity": 15
+}
+
+### 5. Modifier une équipe (organisateur propriétaire uniquement)
+PUT {{baseUrl}}/api/teams/{{teamId}}/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Les Dragons - Modifié",
+  "max_capacity": 20
+}
+
+### 6. Modifier partiellement une équipe
+PATCH {{baseUrl}}/api/teams/{{teamId}}/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "max_capacity": 18
+}
+
+### 7. Supprimer une équipe (organisateur propriétaire uniquement)
+DELETE {{baseUrl}}/api/teams/{{teamId}}/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 8. Rechercher des équipes disponibles (joueurs)
+GET {{baseUrl}}/api/teams/search/?tournament_id={{tournamentId}}&available=true&search=dragons
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 9. Rechercher des équipes disponibles (sans filtres)
+GET {{baseUrl}}/api/teams/search/?available=true
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 10. Voir les membres d'une équipe
+GET {{baseUrl}}/api/teams/{{teamId}}/members/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+
+### ============================================
+### API JOIN REQUESTS
+### ============================================
+
+### 1. Lister toutes les demandes d'adhésion
+GET {{baseUrl}}/api/join-requests/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 2. Mes demandes (joueur uniquement)
+GET {{baseUrl}}/api/join-requests/my/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 3. Demandes reçues (organisateur uniquement)
+GET {{baseUrl}}/api/join-requests/received/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 4. Créer une nouvelle demande d'adhésion (joueur uniquement)
+POST {{baseUrl}}/api/join-requests/
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "team_id": "{{teamId}}",
+  "message": "Je veux rejoindre cette équipe"
+}
+
+### 5. Accepter une demande d'adhésion (organisateur uniquement)
+PATCH {{baseUrl}}/api/join-requests/REPLACE_WITH_JOIN_REQUEST_ID/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
   "status": "accepted"
 }
 
-
-### 6. Rejeter une demande d’adhésion (ex: JoinRequest id=2)
-PATCH http://127.0.0.1:8000/api/joinrequests/2/
+### 6. Rejeter une demande d'adhésion (organisateur uniquement)
+PATCH {{baseUrl}}/api/join-requests/REPLACE_WITH_JOIN_REQUEST_ID/
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
   "status": "rejected"
 }
-
-
-### 7. Vérifier les membres d’une équipe (Les Dragons)
-GET http://127.0.0.1:8000/api/teams/1/
-Content-Type: application/json
