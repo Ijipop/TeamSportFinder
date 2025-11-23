@@ -170,6 +170,12 @@ const DashboardOrganiserPage: React.FC = () =>
 					>
 						Voir tous les tournois
 					</Button>
+					<Button
+						variant="outlined"
+						onClick={() => navigate("/gestion-equipe-organiser")}
+					>
+						Gérer mes équipes
+					</Button>
 				</Box>
 			</Box>
 
