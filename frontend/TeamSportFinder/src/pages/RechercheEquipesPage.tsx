@@ -103,11 +103,14 @@ const RechercheEquipesPage: React.FC = () => {
 
 		setJoining(true);
 		setError(null);
+		setSuccess(null);
 		try {
 			const token = await getToken();
+			// Ne pas envoyer le message s'il est vide
+			const messageToSend = joinMessage && joinMessage.trim() ? joinMessage.trim() : undefined;
 			await createJoinRequest(
 				selectedTeam.id,
-				joinMessage || undefined,
+				messageToSend,
 				token
 			);
 			setSuccess("Demande d'adhésion envoyée avec succès !");
@@ -116,6 +119,7 @@ const RechercheEquipesPage: React.FC = () => {
 			// Recharger la liste pour mettre à jour les statuts
 			await loadTeams();
 		} catch (err: any) {
+			console.error("Erreur complète:", err);
 			setError(err.message || "Erreur lors de l'envoi de la demande");
 		} finally {
 			setJoining(false);
