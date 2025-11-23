@@ -10,27 +10,28 @@ import { AuthProvider, useAuth } from "../contexts/AuthContext";
 import { DashboardOrganiserPage } from "../pages/DashboardOrganiserPage";
 import { DashboardPlayerPage } from "../pages/DashboardPlayerPage";
 import { DashboardRedirectPage } from "../pages/DashboardRedirectPage";
+import { GestionEquipeOrganiser } from "../pages/GestionEquipeOrganiser";
+import { GestionEquipePlayer } from "../pages/GestionEquipePlayer";
 import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
 import { ProfilePage } from "../pages/ProfilePage";
+import { ProfilePlayerPage } from "../pages/ProfilePlayerPage";
 import { RegisterCompletePage } from "../pages/RegisterCompletePage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { SelectRolePage } from "../pages/SelectRolePage";
-import { GestionEquipeOrganiser } from "../pages/GestionEquipeOrganiser";
-import { GestionEquipePlayer } from "../pages/GestionEquipePlayer";
 
 import { ConditionOfUsePage } from "../pages/ConditionOfUsePage";
 import { CookiesPolicyPage } from "../pages/CookiesPolicyPage";
 import { FaqPage } from "../pages/FaqPage";
-import { PrivacyPolicyPage } from "../pages/PrivacyPolicyPage";
-import { SupportPage } from "../pages/SupportPage";
-import { WhoAreWe } from "../pages/WhoAreWePage";
-import { TournamentsPage } from "../pages/TournamentsPage";
-import { MesDemandesPage } from "../pages/MesDemandesPage";
 import { GestionDemandesPage } from "../pages/GestionDemandesPage";
-import { RechercheEquipesPage } from "../pages/RechercheEquipesPage";
-import { MesMatchsPage } from "../pages/MesMatchsPage";
 import { GestionMatchsPage } from "../pages/GestionMatchsPage";
+import { MesDemandesPage } from "../pages/MesDemandesPage";
+import { MesMatchsPage } from "../pages/MesMatchsPage";
+import { PrivacyPolicyPage } from "../pages/PrivacyPolicyPage";
+import { RechercheEquipesPage } from "../pages/RechercheEquipesPage";
+import { SupportPage } from "../pages/SupportPage";
+import { TournamentsPage } from "../pages/TournamentsPage";
+import { WhoAreWe } from "../pages/WhoAreWePage";
 
 
 // Composant pour les routes protégées avec vérification de profil complet
@@ -388,6 +389,26 @@ export const AppRouter: React.FC = () =>
 									<RoleProtectedRoute allowedRoles={['player', 'organizer']}>
 										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
 											<ProfilePage />
+										</Layout>
+									</RoleProtectedRoute>
+								}
+							/>
+							<Route
+								path="/player/profile"
+								element={
+									<RoleProtectedRoute allowedRoles={['player']}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<ProfilePlayerPage />
+										</Layout>
+									</RoleProtectedRoute>
+								}
+							/>
+							<Route
+								path="/organizer/dashboard"
+								element={
+									<RoleProtectedRoute allowedRoles={['organizer']}>
+										<Layout darkMode={darkMode} toggleDarkMode={toggleDarkMode}>
+											<DashboardOrganiserPage />
 										</Layout>
 									</RoleProtectedRoute>
 								}

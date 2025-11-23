@@ -2,32 +2,35 @@ import React from "react";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { ProfilePlayerPage } from "./ProfilePlayerPage";
+import { ProfileOrganizerPage } from "./ProfileOrganizerPage";
 
 const ProfilePage: React.FC = () =>
 {
-	const navigate = useNavigate();
-	const { user, logout, refreshUser } = useAuth();
+	const { user } = useAuth();
 	
-	const confirmLogout = async () =>
-	{
-        await logout();
-        // setOpenDialog(false);
-		localStorage.removeItem("auth_token");
-		navigate("/");
-    };
+	// Rediriger vers la bonne page selon le rôle
+	if (user?.role === 'player') {
+		return <ProfilePlayerPage />;
+	} else if (user?.role === 'organizer') {
+		return <ProfileOrganizerPage />;
+	}
 	
+	// Par défaut, afficher un message si pas de rôle
 	return (
 		<Container
 			maxWidth="lg"
 			sx={{
-				mt: { xs: 8, sm: 10 }, // Compensation pour AppBar fixe
+				mt: { xs: 8, sm: 10 },
 				px: { xs: 2, sm: 3 },
 			}}
 		>
-			<Typography variant="h1">ProfilePage</Typography>
-			<Button onClick={confirmLogout} color="error" variant="contained">
-                {"Déconnexion"}
-            </Button>
+			<Typography variant="h4" component="h1" gutterBottom>
+				Profil
+			</Typography>
+			<Typography variant="body1" color="text.secondary">
+				Veuillez sélectionner un rôle pour accéder à votre profil.
+			</Typography>
 		</Container>
 	);
 };
