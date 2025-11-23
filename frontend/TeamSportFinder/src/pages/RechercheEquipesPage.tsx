@@ -1,38 +1,36 @@
-import React, { useState, useEffect } from "react";
+import { useAuth as useClerkAuth } from "@clerk/clerk-react";
+import SearchIcon from "@mui/icons-material/Search";
 import {
-	Container,
-	Typography,
-	Box,
-	Card,
-	CardContent,
-	CardActions,
-	Button,
-	CircularProgress,
 	Alert,
+	Box,
+	Button,
+	Card,
+	CardActions,
+	CardContent,
 	Chip,
-	Grid,
-	TextField,
-	Select,
-	MenuItem,
+	CircularProgress,
+	Container,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
 	FormControl,
 	InputLabel,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
+	MenuItem,
+	Select,
+	TextField,
+	Typography,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import { useAuth as useClerkAuth } from "@clerk/clerk-react";
+import React, { useEffect, useState } from "react";
 import {
-	searchTeams,
+	createJoinRequest,
+} from "../core/services/JoinRequestService";
+import {
 	getTournaments,
+	searchTeams,
 	type Team,
 	type Tournament,
 } from "../core/services/TournamentService";
-import {
-	createJoinRequest,
-	type JoinRequest
-} from "../core/services/JoinRequestService";
 
 const RechercheEquipesPage: React.FC = () => {
 	const { getToken } = useClerkAuth();
@@ -124,15 +122,6 @@ const RechercheEquipesPage: React.FC = () => {
 		}
 	};
 
-	const formatDate = (dateString: string) => {
-		const date = new Date(dateString);
-		return date.toLocaleDateString('fr-FR', {
-			year: 'numeric',
-			month: 'long',
-			day: 'numeric'
-		});
-	};
-
 	return (
 		<Container
 			maxWidth="lg"
@@ -165,63 +154,65 @@ const RechercheEquipesPage: React.FC = () => {
 
 			{/* Barre de recherche et filtres */}
 			<Card sx={{ mb: 4, p: 2 }}>
-				<Grid container spacing={2} alignItems="center">
-					<Grid item xs={12} md={4}>
-						<TextField
-							fullWidth
-							label="Rechercher une équipe"
-							placeholder="Nom de l'équipe..."
-							value={searchTerm}
-							onChange={(e) => setSearchTerm(e.target.value)}
-							onKeyPress={(e) => {
-								if (e.key === 'Enter') {
-									handleSearch();
-								}
-							}}
-						/>
-					</Grid>
-					<Grid item xs={12} md={3}>
-						<FormControl fullWidth>
-							<InputLabel>Tournoi</InputLabel>
-							<Select
-								value={selectedTournament}
-								label="Tournoi"
-								onChange={(e) => setSelectedTournament(e.target.value)}
-							>
-								<MenuItem value="all">Tous les tournois</MenuItem>
-								{Array.isArray(tournaments) && tournaments.map((tournament) => (
-									<MenuItem key={tournament.id} value={tournament.id}>
-										{tournament.name} ({tournament.sport})
-									</MenuItem>
-								))}
-							</Select>
-						</FormControl>
-					</Grid>
-					<Grid item xs={12} md={3}>
-						<FormControl fullWidth>
-							<InputLabel>Disponibilité</InputLabel>
-							<Select
-								value={onlyAvailable ? "available" : "all"}
-								label="Disponibilité"
-								onChange={(e) => setOnlyAvailable(e.target.value === "available")}
-							>
-								<MenuItem value="available">Équipes disponibles uniquement</MenuItem>
-								<MenuItem value="all">Toutes les équipes</MenuItem>
-							</Select>
-						</FormControl>
-					</Grid>
-					<Grid item xs={12} md={2}>
-						<Button
-							fullWidth
-							variant="contained"
-							startIcon={<SearchIcon />}
-							onClick={handleSearch}
-							disabled={loading}
+				<Box
+					sx={{
+						display: 'grid',
+						gridTemplateColumns: {
+							xs: '1fr',
+							md: '2fr 1.5fr 1.5fr 1fr',
+						},
+						gap: 2,
+						alignItems: 'center',
+					}}
+				>
+					<TextField
+						fullWidth
+						label="Rechercher une équipe"
+						placeholder="Nom de l'équipe..."
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
+						onKeyPress={(e) => {
+							if (e.key === 'Enter') {
+								handleSearch();
+							}
+						}}
+					/>
+					<FormControl fullWidth>
+						<InputLabel>Tournoi</InputLabel>
+						<Select
+							value={selectedTournament}
+							label="Tournoi"
+							onChange={(e) => setSelectedTournament(e.target.value)}
 						>
-							Rechercher
-						</Button>
-					</Grid>
-				</Grid>
+							<MenuItem value="all">Tous les tournois</MenuItem>
+							{Array.isArray(tournaments) && tournaments.map((tournament) => (
+								<MenuItem key={tournament.id} value={tournament.id}>
+									{tournament.name} ({tournament.sport})
+								</MenuItem>
+							))}
+						</Select>
+					</FormControl>
+					<FormControl fullWidth>
+						<InputLabel>Disponibilité</InputLabel>
+						<Select
+							value={onlyAvailable ? "available" : "all"}
+							label="Disponibilité"
+							onChange={(e) => setOnlyAvailable(e.target.value === "available")}
+						>
+							<MenuItem value="available">Équipes disponibles uniquement</MenuItem>
+							<MenuItem value="all">Toutes les équipes</MenuItem>
+						</Select>
+					</FormControl>
+					<Button
+						fullWidth
+						variant="contained"
+						startIcon={<SearchIcon />}
+						onClick={handleSearch}
+						disabled={loading}
+					>
+						Rechercher
+					</Button>
+				</Box>
 			</Card>
 
 			{loading ? (
@@ -233,65 +224,73 @@ const RechercheEquipesPage: React.FC = () => {
 					Aucune équipe trouvée. Essayez de modifier vos critères de recherche.
 				</Alert>
 			) : (
-				<Grid container spacing={3}>
+				<Box
+					sx={{
+						display: 'grid',
+						gridTemplateColumns: {
+							xs: '1fr',
+							sm: 'repeat(2, 1fr)',
+							md: 'repeat(3, 1fr)',
+						},
+						gap: 3,
+					}}
+				>
 					{Array.isArray(teams) && teams.map((team) => (
-						<Grid item xs={12} sm={6} md={4} key={team.id}>
-							<Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
-								<CardContent sx={{ flexGrow: 1 }}>
-									<Typography variant="h6" component="h2" gutterBottom>
-										{team.name}
-									</Typography>
+						<Card key={team.id} sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
+							<CardContent sx={{ flexGrow: 1 }}>
+								<Typography variant="h6" component="h2" gutterBottom>
+									{team.name}
+								</Typography>
 
-									{team.tournament_name && (
-										<Typography variant="body2" color="text.secondary" gutterBottom>
-											🏆 {team.tournament_name}
-										</Typography>
-									)}
-
-									{team.tournament_sport && (
-										<Chip
-											label={team.tournament_sport}
-											color="primary"
-											size="small"
-											sx={{ mb: 1 }}
-										/>
-									)}
-
+								{team.tournament_name && (
 									<Typography variant="body2" color="text.secondary" gutterBottom>
-										👥 {team.current_capacity}/{team.max_capacity} membres
+										🏆 {team.tournament_name}
 									</Typography>
+								)}
 
-									{team.available_spots !== undefined && team.available_spots > 0 && (
-										<Typography variant="body2" color="success.main" gutterBottom>
-											✅ {team.available_spots} place(s) disponible(s)
-										</Typography>
-									)}
-
-									{team.is_full && (
-										<Chip
-											label="Complet"
-											color="error"
-											size="small"
-											sx={{ mt: 1 }}
-										/>
-									)}
-								</CardContent>
-
-								<CardActions>
-									<Button
+								{team.tournament_sport && (
+									<Chip
+										label={team.tournament_sport}
+										color="primary"
 										size="small"
-										variant="contained"
-										onClick={() => handleJoinTeam(team)}
-										disabled={team.is_full}
-										fullWidth
-									>
-										{team.is_full ? "Équipe complète" : "Rejoindre l'équipe"}
-									</Button>
-								</CardActions>
-							</Card>
-						</Grid>
+										sx={{ mb: 1 }}
+									/>
+								)}
+
+								<Typography variant="body2" color="text.secondary" gutterBottom>
+									👥 {team.current_capacity}/{team.max_capacity} membres
+								</Typography>
+
+								{team.available_spots !== undefined && team.available_spots > 0 && (
+									<Typography variant="body2" color="success.main" gutterBottom>
+										✅ {team.available_spots} place(s) disponible(s)
+									</Typography>
+								)}
+
+								{team.is_full && (
+									<Chip
+										label="Complet"
+										color="error"
+										size="small"
+										sx={{ mt: 1 }}
+									/>
+								)}
+							</CardContent>
+
+							<CardActions>
+								<Button
+									size="small"
+									variant="contained"
+									onClick={() => handleJoinTeam(team)}
+									disabled={team.is_full}
+									fullWidth
+								>
+									{team.is_full ? "Équipe complète" : "Rejoindre l'équipe"}
+								</Button>
+							</CardActions>
+						</Card>
 					))}
-				</Grid>
+				</Box>
 			)}
 
 			{/* Dialog pour rejoindre une équipe */}
