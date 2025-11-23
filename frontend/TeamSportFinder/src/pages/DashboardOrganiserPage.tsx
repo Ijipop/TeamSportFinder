@@ -15,6 +15,10 @@ import {
 	DialogContent,
 	DialogActions,
 	TextField,
+	Select,
+	MenuItem,
+	FormControl,
+	InputLabel,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MailIcon from "@mui/icons-material/Mail";
@@ -282,15 +286,36 @@ const DashboardOrganiserPage: React.FC = () =>
 							required
 							disabled={creating}
 						/>
-						<TextField
-							label="Sport"
-							value={tournamentForm.sport}
-							onChange={(e) => setTournamentForm({ ...tournamentForm, sport: e.target.value })}
-							fullWidth
-							required
-							disabled={creating}
-							placeholder="Ex: Football, Basketball, Tennis..."
-						/>
+						<FormControl fullWidth required disabled={creating}>
+							<InputLabel>Sport</InputLabel>
+							<Select
+								value={tournamentForm.sport}
+								label="Sport"
+								onChange={(e) => setTournamentForm({ ...tournamentForm, sport: e.target.value })}
+							>
+								<MenuItem value="Badminton">Badminton</MenuItem>
+								<MenuItem value="Baseball">Baseball</MenuItem>
+								<MenuItem value="Basketball">Basketball</MenuItem>
+								<MenuItem value="Boxe">Boxe</MenuItem>
+								<MenuItem value="Course à pied">Course à pied</MenuItem>
+								<MenuItem value="Curling">Curling</MenuItem>
+								<MenuItem value="Cyclisme">Cyclisme</MenuItem>
+								<MenuItem value="Football">Football</MenuItem>
+								<MenuItem value="Football américain">Football américain</MenuItem>
+								<MenuItem value="Golf">Golf</MenuItem>
+								<MenuItem value="Hockey sur glace">Hockey sur glace</MenuItem>
+								<MenuItem value="Lacrosse">Lacrosse</MenuItem>
+								<MenuItem value="Natation">Natation</MenuItem>
+								<MenuItem value="Patinage">Patinage</MenuItem>
+								<MenuItem value="Rugby">Rugby</MenuItem>
+								<MenuItem value="Ski">Ski</MenuItem>
+								<MenuItem value="Snowboard">Snowboard</MenuItem>
+								<MenuItem value="Soccer">Soccer</MenuItem>
+								<MenuItem value="Tennis">Tennis</MenuItem>
+								<MenuItem value="Volleyball">Volleyball</MenuItem>
+								<MenuItem value="Water-polo">Water-polo</MenuItem>
+							</Select>
+						</FormControl>
 						<TextField
 							label="Ville"
 							value={tournamentForm.city}
