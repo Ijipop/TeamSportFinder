@@ -197,19 +197,13 @@ Content-Type: application/json
 }
 
 ### 5. Accepter une demande d'adhésion (organisateur uniquement)
-PATCH {{baseUrl}}/api/join-requests/REPLACE_WITH_JOIN_REQUEST_ID/
+# Remplacez REPLACE_WITH_JOIN_REQUEST_ID par l'ID d'une demande en attente
+POST {{baseUrl}}/api/join-requests/REPLACE_WITH_JOIN_REQUEST_ID/accept/
 Authorization: Bearer {{token}}
 Content-Type: application/json
-
-{
-  "status": "accepted"
-}
 
 ### 6. Rejeter une demande d'adhésion (organisateur uniquement)
-PATCH {{baseUrl}}/api/join-requests/REPLACE_WITH_JOIN_REQUEST_ID/
+# Remplacez REPLACE_WITH_JOIN_REQUEST_ID par l'ID d'une demande en attente
+POST {{baseUrl}}/api/join-requests/REPLACE_WITH_JOIN_REQUEST_ID/reject/
 Authorization: Bearer {{token}}
 Content-Type: application/json
-
-{
-  "status": "rejected"
-}
