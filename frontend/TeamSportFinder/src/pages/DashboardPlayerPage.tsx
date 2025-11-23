@@ -1,9 +1,9 @@
-import React from "react";
-import { Container, Typography, Button, Box, Grid, Card, CardContent, CardActions } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
-import SearchIcon from "@mui/icons-material/Search";
 import MailIcon from "@mui/icons-material/Mail";
+import SearchIcon from "@mui/icons-material/Search";
+import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
+import { Box, Button, Card, CardActions, CardContent, Container, Typography } from "@mui/material";
+import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const DashboardPlayerPage: React.FC = () =>
 {
@@ -27,78 +27,83 @@ const DashboardPlayerPage: React.FC = () =>
 				</Typography>
 			</Box>
 
-			<Grid container spacing={3}>
-				<Grid item xs={12} sm={6} md={4}>
-					<Card sx={{ height: "100%" }}>
-						<CardContent>
-							<Typography variant="h6" gutterBottom>
-								🔍 Rechercher une équipe
-							</Typography>
-							<Typography variant="body2" color="text.secondary">
-								Trouvez et rejoignez une équipe pour participer à un tournoi
-							</Typography>
-						</CardContent>
-						<CardActions>
-							<Button
-								variant="contained"
-								startIcon={<SearchIcon />}
-								onClick={() => navigate("/teams/search")}
-								fullWidth
-							>
-								Rechercher
-							</Button>
-						</CardActions>
-					</Card>
-				</Grid>
+			<Box
+				sx={{
+					display: 'grid',
+					gridTemplateColumns: {
+						xs: '1fr',
+						sm: 'repeat(2, 1fr)',
+						md: 'repeat(3, 1fr)',
+					},
+					gap: 3,
+				}}
+			>
+				<Card sx={{ height: "100%" }}>
+					<CardContent>
+						<Typography variant="h6" gutterBottom>
+							🔍 Rechercher une équipe
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							Trouvez et rejoignez une équipe pour participer à un tournoi
+						</Typography>
+					</CardContent>
+					<CardActions>
+						<Button
+							variant="contained"
+							startIcon={<SearchIcon />}
+							onClick={() => navigate("/teams/search")}
+							fullWidth
+						>
+							Rechercher
+						</Button>
+					</CardActions>
+				</Card>
 
-				<Grid item xs={12} sm={6} md={4}>
-					<Card sx={{ height: "100%" }}>
-						<CardContent>
-							<Typography variant="h6" gutterBottom>
-								📋 Mes demandes
-							</Typography>
-							<Typography variant="body2" color="text.secondary">
-								Suivez l'état de vos demandes pour rejoindre des équipes
-							</Typography>
-						</CardContent>
-						<CardActions>
-							<Button
-								variant="contained"
-								startIcon={<MailIcon />}
-								onClick={() => navigate("/my-requests")}
-								fullWidth
-							>
-								Voir mes demandes
-							</Button>
-						</CardActions>
-					</Card>
-				</Grid>
+				<Card sx={{ height: "100%" }}>
+					<CardContent>
+						<Typography variant="h6" gutterBottom>
+							📋 Mes demandes
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							Suivez l'état de vos demandes pour rejoindre des équipes
+						</Typography>
+					</CardContent>
+					<CardActions>
+						<Button
+							variant="contained"
+							startIcon={<MailIcon />}
+							onClick={() => navigate("/my-requests")}
+							fullWidth
+						>
+							Voir mes demandes
+						</Button>
+					</CardActions>
+				</Card>
 
-				<Grid item xs={12} sm={6} md={4}>
-					<Card sx={{ height: "100%" }}>
-						<CardContent>
-							<Typography variant="h6" gutterBottom>
-								⚽ Mes matchs
-							</Typography>
-							<Typography variant="body2" color="text.secondary">
-								Consultez tous vos matchs à venir et passés
-							</Typography>
-						</CardContent>
-						<CardActions>
-							<Button
-								variant="contained"
-								startIcon={<SportsSoccerIcon />}
-								onClick={() => navigate("/my-matches")}
-								fullWidth
-							>
-								Voir mes matchs
-							</Button>
-						</CardActions>
-					</Card>
-				</Grid>
-			</Grid>
+				<Card sx={{ height: "100%" }}>
+					<CardContent>
+						<Typography variant="h6" gutterBottom>
+							⚽ Mes matchs
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							Consultez tous vos matchs à venir et passés
+						</Typography>
+					</CardContent>
+					<CardActions>
+						<Button
+							variant="contained"
+							startIcon={<SportsSoccerIcon />}
+							onClick={() => navigate("/my-matches")}
+							fullWidth
+						>
+							Voir mes matchs
+						</Button>
+					</CardActions>
+				</Card>
+			</Box>
 		</Container>
 	);
 };
 
 export { DashboardPlayerPage };
+
