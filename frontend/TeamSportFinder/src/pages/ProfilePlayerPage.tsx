@@ -8,7 +8,6 @@ import {
 	CircularProgress,
 	Container,
 	FormControl,
-	InputLabel,
 	MenuItem,
 	Select,
 	TextField,
@@ -42,6 +41,13 @@ const ProfilePlayerPage = () =>
 		level: 'beginner',
 		position: '',
 	});
+	const [isEditing, setIsEditing] = useState(false);
+	const levelLabels: Record<string, string> = {
+		beginner: "Débutant",
+		intermediate: "Intermédiaire",
+		advanced: "Avancé",
+	};
+
 
 	// Récupérer l'email réel depuis Clerk
 	const realEmail = clerkUser?.primaryEmailAddress?.emailAddress || '';
@@ -113,6 +119,7 @@ const ProfilePlayerPage = () =>
 			
 			setProfile(updatedProfile);
 			setSuccess("Profil sauvegardé avec succès !");
+			setIsEditing(false);
 		}
 		catch (err: any)
 		{
@@ -133,6 +140,30 @@ const ProfilePlayerPage = () =>
 		}));
 	};
 
+	const handleCancel = () => {
+		if (profile) {
+		setFormData({
+			city: profile.city || '',
+			favorite_sport: profile.favorite_sport || '',
+			level: profile.level || 'beginner',
+			position: profile.position || '',
+		});
+		}
+		setIsEditing(false);
+	};
+
+	// Fonction utilitaire pour afficher un champ
+	const renderField = (value: string | undefined, label?: (val: string) => string) => {
+	if (!value || value.trim() === "") {
+		return <Typography variant="h4" color="error">Non disponible</Typography>;
+	}
+	return (
+		<Typography variant="h4" color="primary">
+		{label ? label(value) : value}
+		</Typography>
+	);
+	};
+
 	if (loading)
 	{
 		return (
@@ -147,7 +178,7 @@ const ProfilePlayerPage = () =>
 	return (
 		<Container maxWidth="md" sx={{ mt: { xs: 8, sm: 10 }, px: { xs: 2, sm: 3 }, pb: 4 }}>
 			<Typography variant="h4" component="h1" gutterBottom align="center" sx={{ mb: 4 }}>
-				👤 Mon profil
+				👤 Mon profil joueur
 			</Typography>
 
 			{success && (
@@ -162,96 +193,171 @@ const ProfilePlayerPage = () =>
 				</Alert>
 			)}
 
-			<Card>
+			{/* Informations de base */}
+			<Card sx={{ mb: 3 }}>
 				<CardContent>
-					{profile && (
-						<Box sx={{ mb: 3 }}>
-							<Typography variant="body2" color="text.secondary" gutterBottom>
-								Email: {realEmail || profile.email}
-							</Typography>
+					<Typography variant="h6" gutterBottom>
+						Informations personnelles
+					</Typography>
+					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+						<Box>
 							<Typography variant="body2" color="text.secondary">
-								Nom complet: {profile.full_name}
+								Nom complet
+							</Typography>
+							<Typography variant="body1">
+								{clerkUser?.fullName || `${clerkUser?.firstName || ''} ${clerkUser?.lastName || ''}`.trim() || 'Non disponible'}
 							</Typography>
 						</Box>
-					)}
+						<Box>
+							<Typography variant="body2" color="text.secondary">
+								Email
+							</Typography>
+							<Typography variant="body1">
+								{realEmail || profile?.email || 'Non disponible'}
+							</Typography>
+						</Box>
+						<Box>
+							<Typography variant="body2" color="text.secondary">
+								Rôle
+							</Typography>
+							<Typography variant="body1">
+								Joueur
+							</Typography>
+						</Box>
+					</Box>
+				</CardContent>
+			</Card>
 
-					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-						<TextField
-							label="Nom complet"
-							fullWidth
-							value={profile?.full_name || ''}
-							disabled
-							helperText="Le nom complet ne peut pas être modifié ici"
-						/>
+			{/* Informations */}
+			<Card>
+				<Card>
+					<CardContent>
+					<Typography variant="h6" gutterBottom>
+						Informations de joueur
+					</Typography>
 
-						<TextField
-							label="Ville"
+					{/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}> */}
+					<Box
+						sx={{
+							display: 'grid',
+							gridTemplateColumns: {
+								xs: '1fr',
+								sm: 'repeat(2, 1fr)',
+							},
+							gap: 2,
+							mt: 2,
+						}}
+					>
+						{/* Ville */}
+						<Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+						<Typography variant="body2" color="text.secondary">Ville</Typography>
+						{isEditing ? (
+							<TextField
 							fullWidth
-							required
 							value={formData.city}
 							onChange={(e) => handleChange('city', e.target.value)}
 							placeholder="Ex: Paris, Lyon, Marseille..."
-						/>
-
-						<TextField
-							label="Sport principal"
-							fullWidth
 							required
+							/>
+						) : (
+							renderField(formData.city)
+						)}
+						</Box>
+
+						{/* Sport principal */}
+						<Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+						<Typography variant="body2" color="text.secondary">Sport principal</Typography>
+						{isEditing ? (
+							<TextField
+							fullWidth
 							value={formData.favorite_sport}
 							onChange={(e) => handleChange('favorite_sport', e.target.value)}
 							placeholder="Ex: Football, Basketball, Tennis..."
-						/>
+							required
+							/>
+						) : (
+							renderField(formData.favorite_sport)
+						)}
+						</Box>
 
-						<FormControl fullWidth required>
-							<InputLabel>Niveau</InputLabel>
+						{/* Niveau */}
+						<Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+						<Typography variant="body2" color="text.secondary">Niveau</Typography>
+						{isEditing ? (
+							<FormControl fullWidth>
 							<Select
 								value={formData.level}
-								label="Niveau"
-								onChange={(e) => handleChange('level', e.target.value as 'beginner' | 'intermediate' | 'advanced')}
+								onChange={(e) => handleChange("level", e.target.value as "beginner" | "intermediate" | "advanced")}
 							>
 								<MenuItem value="beginner">Débutant</MenuItem>
 								<MenuItem value="intermediate">Intermédiaire</MenuItem>
 								<MenuItem value="advanced">Avancé</MenuItem>
 							</Select>
-						</FormControl>
+							</FormControl>
+						) : (
+							renderField(formData.level, (val) => levelLabels[val])
+						)}
+						</Box>
 
-						<TextField
-							label="Poste préféré (optionnel)"
+						{/* Poste préféré */}
+						<Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
+						<Typography variant="body2" color="text.secondary">Poste préféré</Typography>
+						{isEditing ? (
+							<TextField
 							fullWidth
-							value={formData.position || ''}
+							value={formData.position}
 							onChange={(e) => handleChange('position', e.target.value)}
 							placeholder="Ex: Attaquant, Gardien, Meneur..."
 							helperText="Indiquez votre poste préféré dans votre sport"
-						/>
+							/>
+						) : (
+							renderField(formData.position)
+						)}
+						</Box>
 					</Box>
+					</CardContent>
 
-					<Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mt: 4 }}>
-						<Button
-							variant="outlined"
-							color="error"
-							onClick={async () =>
-							{
-								await logout();
-								localStorage.removeItem("auth_token");
-								navigate("/");
-							}}
-						>
-							Déconnexion
-						</Button>
+					<Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, p: 2 }}>
+					{isEditing ? (
+						<>
 						<Button
 							variant="contained"
+							color="primary"
 							onClick={handleSubmit}
-							disabled={saving || !formData.city.trim() || !formData.favorite_sport.trim()}
-							sx={{ minWidth: 120 }}
+							disabled={saving}
 						>
 							{saving ? <CircularProgress size={20} /> : 'Sauvegarder'}
 						</Button>
+						<Button variant="outlined" color="secondary" onClick={handleCancel}>
+							Annuler
+						</Button>
+						</>
+					) : (
+						<Button variant="contained" onClick={() => setIsEditing(true)}>
+						Modifier
+						</Button>
+					)}
 					</Box>
-				</CardContent>
+				</Card>
 			</Card>
+
+			{/* Bouton de déconnexion */}
+			<Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+				<Button
+					variant="outlined"
+					color="error"
+					onClick={async () =>
+					{
+						await logout();
+						localStorage.removeItem("auth_token");
+						navigate("/");
+					}}
+				>
+					Déconnexion
+				</Button>
+			</Box>
 		</Container>
 	);
 };
 
 export { ProfilePlayerPage };
-
