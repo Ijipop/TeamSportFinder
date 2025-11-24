@@ -8,7 +8,6 @@ import {
 	CircularProgress,
 	Container,
 	FormControl,
-	InputLabel,
 	MenuItem,
 	Select,
 	TextField,
@@ -153,6 +152,18 @@ const ProfilePlayerPage = () =>
 		setIsEditing(false);
 	};
 
+	// Fonction utilitaire pour afficher un champ
+	const renderField = (value: string | undefined, label?: (val: string) => string) => {
+	if (!value || value.trim() === "") {
+		return <Typography variant="h4" color="error">Non disponible</Typography>;
+	}
+	return (
+		<Typography variant="h4" color="primary">
+		{label ? label(value) : value}
+		</Typography>
+	);
+	};
+
 	if (loading)
 	{
 		return (
@@ -249,8 +260,7 @@ const ProfilePlayerPage = () =>
 							required
 							/>
 						) : (
-							// ✅ rouge si Non disponible
-							<Typography variant="h4" color={formData.city ? "primary" : "error"}> {formData.city || "Non disponible"} </Typography>
+							renderField(formData.city)
 						)}
 						</Box>
 
@@ -266,7 +276,7 @@ const ProfilePlayerPage = () =>
 							required
 							/>
 						) : (
-							<Typography variant="h4" color={formData.favorite_sport ? "primary" : "error"}> {formData.favorite_sport || "Non disponible"} </Typography>
+							renderField(formData.favorite_sport)
 						)}
 						</Box>
 
@@ -285,7 +295,7 @@ const ProfilePlayerPage = () =>
 							</Select>
 							</FormControl>
 						) : (
-							<Typography variant="h4" color={formData.level ? "primary" : "error"}> {formData.level ? levelLabels[formData.level] : "Non disponible"} </Typography>
+							renderField(formData.level, (val) => levelLabels[val])
 						)}
 						</Box>
 
@@ -301,7 +311,7 @@ const ProfilePlayerPage = () =>
 							helperText="Indiquez votre poste préféré dans votre sport"
 							/>
 						) : (
-							<Typography variant="h4" color={formData.position ? "primary" : "error"}> {formData.position || "Non disponible"} </Typography>
+							renderField(formData.position)
 						)}
 						</Box>
 					</Box>
