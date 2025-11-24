@@ -249,7 +249,8 @@ const ProfilePlayerPage = () =>
 							required
 							/>
 						) : (
-							<Typography variant="h4" color="primary">{formData.city || 'Non disponible'}</Typography>
+							// ✅ rouge si Non disponible
+							<Typography variant="h4" color={formData.city ? "primary" : "error"}> {formData.city || "Non disponible"} </Typography>
 						)}
 						</Box>
 
@@ -265,7 +266,7 @@ const ProfilePlayerPage = () =>
 							required
 							/>
 						) : (
-							<Typography variant="h4" color="primary">{formData.favorite_sport || 'Non disponible'}</Typography>
+							<Typography variant="h4" color={formData.favorite_sport ? "primary" : "error"}> {formData.favorite_sport || "Non disponible"} </Typography>
 						)}
 						</Box>
 
@@ -274,7 +275,6 @@ const ProfilePlayerPage = () =>
 						<Typography variant="body2" color="text.secondary">Niveau</Typography>
 						{isEditing ? (
 							<FormControl fullWidth>
-							{/* <InputLabel>Niveau</InputLabel> */}
 							<Select
 								value={formData.level}
 								onChange={(e) => handleChange("level", e.target.value as "beginner" | "intermediate" | "advanced")}
@@ -285,7 +285,7 @@ const ProfilePlayerPage = () =>
 							</Select>
 							</FormControl>
 						) : (
-							<Typography variant="h4" color="primary">{formData.level ? levelLabels[formData.level] : "Non disponible"} </Typography>
+							<Typography variant="h4" color={formData.level ? "primary" : "error"}> {formData.level ? levelLabels[formData.level] : "Non disponible"} </Typography>
 						)}
 						</Box>
 
@@ -301,7 +301,7 @@ const ProfilePlayerPage = () =>
 							helperText="Indiquez votre poste préféré dans votre sport"
 							/>
 						) : (
-							<Typography variant="h4" color="primary">{formData.position || 'Non disponible'}</Typography>
+							<Typography variant="h4" color={formData.position ? "primary" : "error"}> {formData.position || "Non disponible"} </Typography>
 						)}
 						</Box>
 					</Box>
