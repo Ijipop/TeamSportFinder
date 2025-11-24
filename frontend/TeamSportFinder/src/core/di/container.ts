@@ -4,7 +4,7 @@ import {
 	type IAuthService,
 
 } from "../interfaces";
-import { TYPES } from "./types";
+import { TYPES } from "./types"; 
 
 // Services concrets
 // import { AuthService } from "../services/AuthService";

@@ -1,27 +1,32 @@
-import React, { useState, useEffect } from "react";
-import {
-	Container,
-	Typography,
-	Box,
-	Card,
-	CardContent,
-	CardActions,
-	Button,
-	CircularProgress,
-	Alert,
-	Chip,
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogActions,
-	TextField,
-} from "@mui/material";
+import { useAuth as useClerkAuth } from "@clerk/clerk-react";
 import AddIcon from "@mui/icons-material/Add";
 import MailIcon from "@mui/icons-material/Mail";
 import SportsSoccerIcon from "@mui/icons-material/SportsSoccer";
-import { useAuth as useClerkAuth } from "@clerk/clerk-react";
+import {
+	Alert,
+	Box,
+	Button,
+	Card,
+	CardActions,
+	CardContent,
+	Chip,
+	CircularProgress,
+	Container,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	FormControl,
+	InputLabel,
+	MenuItem,
+	Select,
+	TextField,
+	Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getMyTournaments, createTournament, type Tournament } from "../core/services/TournamentService";
+import { getReceivedRequests } from "../core/services/JoinRequestService";
+import { createTournament, getMyTournaments, getTeams, type Tournament } from "../core/services/TournamentService";
 
 const DashboardOrganiserPage: React.FC = () =>
 {
@@ -29,6 +34,7 @@ const DashboardOrganiserPage: React.FC = () =>
 	const navigate = useNavigate();
 	const [tournaments, setTournaments] = useState<Tournament[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [statsLoading, setStatsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [success, setSuccess] = useState<string | null>(null);
 	const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -39,9 +45,15 @@ const DashboardOrganiserPage: React.FC = () =>
 		city: "",
 		start_date: "",
 	});
+	
+	// Statistiques
+	const [totalTeams, setTotalTeams] = useState(0);
+	const [pendingRequests, setPendingRequests] = useState(0);
 
-	useEffect(() => {
+	useEffect(() =>
+	{
 		loadMyTournaments();
+		loadStatistics();
 	}, []);
 
 	const loadMyTournaments = async () =>
@@ -76,6 +88,44 @@ const DashboardOrganiserPage: React.FC = () =>
 		}
 	};
 
+	const loadStatistics = async () =>
+	{
+		setStatsLoading(true);
+		try
+		{
+			const token = await getToken();
+			
+			// Charger toutes les équipes de mes tournois
+			const teams = await getTeams(token);
+			const myTournamentIds = tournaments.map(t => t.id);
+			const myTeams = Array.isArray(teams) ? teams.filter(team => 
+				team.tournament_id && myTournamentIds.includes(team.tournament_id)
+			) : [];
+			setTotalTeams(myTeams.length);
+			
+			// Charger les demandes reçues et compter celles en attente
+			const requests = await getReceivedRequests(token);
+			const pending = Array.isArray(requests) ? requests.filter(req => req.status === 'pending') : [];
+			setPendingRequests(pending.length);
+		}
+		catch (err: any)
+		{
+			console.error("Erreur lors du chargement des statistiques:", err);
+		}
+		finally
+		{
+			setStatsLoading(false);
+		}
+	};
+
+	// Recharger les statistiques quand les tournois changent
+	useEffect(() => {
+		if (tournaments.length >= 0) {
+			loadStatistics();
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [tournaments.length]);
+
 	const formatDate = (dateString: string) =>
 	{
 		const date = new Date(dateString);
@@ -108,8 +158,9 @@ const DashboardOrganiserPage: React.FC = () =>
 			setSuccess(`Tournoi "${newTournament.name}" créé avec succès !`);
 			setCreateDialogOpen(false);
 			setTournamentForm({ name: "", sport: "", city: "", start_date: "" });
-			// Recharger la liste des tournois
+			// Recharger la liste des tournois et les statistiques
 			await loadMyTournaments();
+			await loadStatistics();
 		}
 		catch (err: any)
 		{
@@ -190,6 +241,63 @@ const DashboardOrganiserPage: React.FC = () =>
 					{success}
 				</Alert>
 			)}
+
+			{/* Statistiques rapides */}
+			<Box
+				sx={{
+					display: 'grid',
+					gridTemplateColumns: {
+						xs: '1fr',
+						sm: 'repeat(3, 1fr)',
+					},
+					gap: 3,
+					mb: 4,
+				}}
+			>
+				<Card>
+					<CardContent>
+						<Typography variant="h4" component="div" gutterBottom>
+							{tournaments.length}
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							Tournois créés
+						</Typography>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardContent>
+						<Typography variant="h4" component="div" gutterBottom>
+							{statsLoading ? <CircularProgress size={24} /> : totalTeams}
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							Total d'équipes
+						</Typography>
+					</CardContent>
+				</Card>
+
+				<Card>
+					<CardContent>
+						<Typography variant="h4" component="div" gutterBottom>
+							{statsLoading ? <CircularProgress size={24} /> : pendingRequests}
+						</Typography>
+						<Typography variant="body2" color="text.secondary">
+							Demandes en attente
+						</Typography>
+						{pendingRequests > 0 && (
+							<Button
+								size="small"
+								variant="contained"
+								startIcon={<MailIcon />}
+								onClick={() => navigate("/organizer/requests")}
+								sx={{ mt: 1 }}
+							>
+								Voir les demandes
+							</Button>
+						)}
+					</CardContent>
+				</Card>
+			</Box>
 
 			<Typography variant="h5" gutterBottom sx={{ mt: 3, mb: 2 }}>
 				Mes tournois ({tournaments.length})
@@ -282,15 +390,36 @@ const DashboardOrganiserPage: React.FC = () =>
 							required
 							disabled={creating}
 						/>
-						<TextField
-							label="Sport"
-							value={tournamentForm.sport}
-							onChange={(e) => setTournamentForm({ ...tournamentForm, sport: e.target.value })}
-							fullWidth
-							required
-							disabled={creating}
-							placeholder="Ex: Football, Basketball, Tennis..."
-						/>
+						<FormControl fullWidth required disabled={creating}>
+							<InputLabel>Sport</InputLabel>
+							<Select
+								value={tournamentForm.sport}
+								label="Sport"
+								onChange={(e) => setTournamentForm({ ...tournamentForm, sport: e.target.value })}
+							>
+								<MenuItem value="Badminton">Badminton</MenuItem>
+								<MenuItem value="Baseball">Baseball</MenuItem>
+								<MenuItem value="Basketball">Basketball</MenuItem>
+								<MenuItem value="Boxe">Boxe</MenuItem>
+								<MenuItem value="Course à pied">Course à pied</MenuItem>
+								<MenuItem value="Curling">Curling</MenuItem>
+								<MenuItem value="Cyclisme">Cyclisme</MenuItem>
+								<MenuItem value="Football">Football</MenuItem>
+								<MenuItem value="Football américain">Football américain</MenuItem>
+								<MenuItem value="Golf">Golf</MenuItem>
+								<MenuItem value="Hockey sur glace">Hockey sur glace</MenuItem>
+								<MenuItem value="Lacrosse">Lacrosse</MenuItem>
+								<MenuItem value="Natation">Natation</MenuItem>
+								<MenuItem value="Patinage">Patinage</MenuItem>
+								<MenuItem value="Rugby">Rugby</MenuItem>
+								<MenuItem value="Ski">Ski</MenuItem>
+								<MenuItem value="Snowboard">Snowboard</MenuItem>
+								<MenuItem value="Soccer">Soccer</MenuItem>
+								<MenuItem value="Tennis">Tennis</MenuItem>
+								<MenuItem value="Volleyball">Volleyball</MenuItem>
+								<MenuItem value="Water-polo">Water-polo</MenuItem>
+							</Select>
+						</FormControl>
 						<TextField
 							label="Ville"
 							value={tournamentForm.city}
@@ -336,3 +465,4 @@ const DashboardOrganiserPage: React.FC = () =>
 };
 
 export { DashboardOrganiserPage };
+

@@ -339,12 +339,18 @@ const GestionEquipeOrganiser = () =>
 				Gestion des équipes organisateur
 			</Typography>
 
-			<Box sx={{ mb: 4, display: 'flex', justifyContent: 'flex-end' }}>
+			<Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+				{tournaments.length === 0 && (
+					<Alert severity="info" sx={{ flex: 1 }}>
+						Vous devez d'abord créer un tournoi avant de pouvoir créer une équipe.
+					</Alert>
+				)}
 				<Button
 					variant="contained"
 					color="primary"
 					onClick={handleOpenDialog}
 					disabled={tournaments.length === 0}
+					sx={{ ml: tournaments.length === 0 ? 2 : 0 }}
 				>
 					Créer une équipe
 				</Button>

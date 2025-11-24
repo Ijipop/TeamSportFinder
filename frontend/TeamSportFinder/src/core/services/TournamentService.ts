@@ -333,6 +333,30 @@ export const searchTeams = async (
 };
 
 /**
+ * Récupère les détails d'une équipe
+ * @param teamId - ID de l'équipe
+ * @param token - Token JWT Clerk
+ */
+export const getTeam = async (teamId: string, token: string | null): Promise<Team> => {
+	try {
+		const headers = createAuthHeaders(token);
+		const response = await fetch(`${API_BASE_URL}/api/teams/${teamId}/`, {
+			method: 'GET',
+			headers,
+		});
+
+		if (!response.ok) {
+			throw new Error(`Erreur HTTP: ${response.status}`);
+		}
+
+		return await response.json();
+	} catch (error) {
+		console.error("Erreur lors de la récupération de l'équipe:", error);
+		throw error;
+	}
+};
+
+/**
  * Crée une équipe dans un tournoi (organisateur uniquement)
  * @param teamData - Données de l'équipe
  * @param token - Token JWT Clerk

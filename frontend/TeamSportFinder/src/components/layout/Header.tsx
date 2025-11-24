@@ -117,7 +117,7 @@ const Header = ({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMod
 								<Button
 									color="inherit"
 									component={Link}
-									to="/profile"
+									to={user?.role === 'player' ? '/player/profile' : '/profile'}
 									sx={{ color: darkMode ? "text.primary" : "white" }}
 								>
 									{/* {"Profile"} */}
@@ -217,7 +217,7 @@ const Header = ({ darkMode, toggleDarkMode }: { darkMode: boolean; toggleDarkMod
 									<Button
 										color="inherit"
 										component={Link}
-										to="/profile"
+										to={user?.role === 'player' ? '/player/profile' : '/profile'}
 										onClick={closeMobileMenu}
 										fullWidth
 										sx={{ color: "text.primary" }}
