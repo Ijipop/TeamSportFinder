@@ -43,6 +43,12 @@ const ProfilePlayerPage = () =>
 		position: '',
 	});
 	const [isEditing, setIsEditing] = useState(false);
+	const levelLabels: Record<string, string> = {
+		beginner: "Débutant",
+		intermediate: "Intermédiaire",
+		advanced: "Avancé",
+	};
+
 
 	// Récupérer l'email réel depuis Clerk
 	const realEmail = clerkUser?.primaryEmailAddress?.emailAddress || '';
@@ -219,46 +225,59 @@ const ProfilePlayerPage = () =>
 						Informations de joueur
 					</Typography>
 
-					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+					{/* <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}> */}
+					<Box
+						sx={{
+							display: 'grid',
+							gridTemplateColumns: {
+								xs: '1fr',
+								sm: 'repeat(2, 1fr)',
+							},
+							gap: 2,
+							mt: 2,
+						}}
+					>
 						{/* Ville */}
-						<Box>
+						<Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
 						<Typography variant="body2" color="text.secondary">Ville</Typography>
 						{isEditing ? (
 							<TextField
 							fullWidth
 							value={formData.city}
 							onChange={(e) => handleChange('city', e.target.value)}
+							placeholder="Ex: Paris, Lyon, Marseille..."
 							required
 							/>
 						) : (
-							<Typography variant="body1">{formData.city || 'Non disponible'}</Typography>
+							<Typography variant="h4" color="primary">{formData.city || 'Non disponible'}</Typography>
 						)}
 						</Box>
 
 						{/* Sport principal */}
-						<Box>
+						<Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
 						<Typography variant="body2" color="text.secondary">Sport principal</Typography>
 						{isEditing ? (
 							<TextField
 							fullWidth
 							value={formData.favorite_sport}
 							onChange={(e) => handleChange('favorite_sport', e.target.value)}
+							placeholder="Ex: Football, Basketball, Tennis..."
 							required
 							/>
 						) : (
-							<Typography variant="body1">{formData.favorite_sport || 'Non disponible'}</Typography>
+							<Typography variant="h4" color="primary">{formData.favorite_sport || 'Non disponible'}</Typography>
 						)}
 						</Box>
 
 						{/* Niveau */}
-						<Box>
+						<Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
 						<Typography variant="body2" color="text.secondary">Niveau</Typography>
 						{isEditing ? (
 							<FormControl fullWidth>
-							<InputLabel>Niveau</InputLabel>
+							{/* <InputLabel>Niveau</InputLabel> */}
 							<Select
 								value={formData.level}
-								onChange={(e) => handleChange('level', e.target.value as 'beginner' | 'intermediate' | 'advanced')}
+								onChange={(e) => handleChange("level", e.target.value as "beginner" | "intermediate" | "advanced")}
 							>
 								<MenuItem value="beginner">Débutant</MenuItem>
 								<MenuItem value="intermediate">Intermédiaire</MenuItem>
@@ -266,21 +285,23 @@ const ProfilePlayerPage = () =>
 							</Select>
 							</FormControl>
 						) : (
-							<Typography variant="body1">{formData.level || 'Non disponible'}</Typography>
+							<Typography variant="h4" color="primary">{formData.level ? levelLabels[formData.level] : "Non disponible"} </Typography>
 						)}
 						</Box>
 
 						{/* Poste préféré */}
-						<Box>
+						<Box sx={{ textAlign: 'center', p: 2, bgcolor: 'background.default', borderRadius: 1 }}>
 						<Typography variant="body2" color="text.secondary">Poste préféré</Typography>
 						{isEditing ? (
 							<TextField
 							fullWidth
 							value={formData.position}
 							onChange={(e) => handleChange('position', e.target.value)}
+							placeholder="Ex: Attaquant, Gardien, Meneur..."
+							helperText="Indiquez votre poste préféré dans votre sport"
 							/>
 						) : (
-							<Typography variant="body1">{formData.position || 'Non disponible'}</Typography>
+							<Typography variant="h4" color="primary">{formData.position || 'Non disponible'}</Typography>
 						)}
 						</Box>
 					</Box>
@@ -330,4 +351,3 @@ const ProfilePlayerPage = () =>
 };
 
 export { ProfilePlayerPage };
-
